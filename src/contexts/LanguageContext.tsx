@@ -45,7 +45,7 @@ const translations = {
     'values.partnership.desc': 'עבודה משותפת להשגת המטרות העסקיות שלכם',
     
     // Portfolio
-    'portfolio.title': 'הפרויקטים שלנו',
+    'portfolio.title': 'חלק מהפרויקטים שלנו',
     'portfolio.filter.all': 'הכל',
     'portfolio.filter.ecommerce': 'חנויות',
     'portfolio.filter.admin': 'ניהול',

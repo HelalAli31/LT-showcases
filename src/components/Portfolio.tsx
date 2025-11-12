@@ -56,6 +56,77 @@ const POSTERS = {
 
 // ==== PROJECT DATA ====
 const projects: Project[] = [
+    {
+    id: 402,
+    title: { he: 'MEIZA HERITAGE — חנות פרימיום', en: 'MEIZA HERITAGE — Premium Store' },
+    description: {
+      he: 'אתר יוקרתי לעיצוב הבית עם חוויית קנייה חלקה.',
+      en: 'Premium home-decor store with smooth shopping.',
+    },
+    category: 'stores',
+    tags: ['Store', 'Premium', 'UX'],
+    image: POSTERS.meiza,
+    videoUrl: vidMeiza,
+    siteUrl: '#',
+    fullDescription: {
+      he: 'עיצוב שחור-זהב, גלריות מעודנות ואופטימיזציה למובייל.',
+      en: 'Black-gold design, refined galleries, mobile-optimized.',
+    },
+  },
+  {
+    id: 403,
+    title: { he: 'Luxury Skin — קוסמטיקה', en: 'Luxury Skin — Cosmetics' },
+    description: {
+      he: 'חנות טיפוח עם סרטוני הדגמה ודפי מוצר מפורטים.',
+      en: 'Skincare store with product videos and rich PDPs.',
+    },
+    category: 'stores',
+    tags: ['Store', 'Beauty', 'Video'],
+    image: POSTERS.luxury,
+    videoUrl: vidLuxurySkin,
+    siteUrl: '#',
+    fullDescription: {
+      he: 'סקירות רכיבים, המלצות ומערכת חוות דעת.',
+      en: 'Ingredient breakdowns, recommendations, reviews.',
+    },
+  },
+    // Gym
+  {
+    id: 201,
+    title: { he: 'RiseFitness — סרט מועדון כושר', en: 'RiseFitness — Gym Promo' },
+    description: {
+      he: 'וידאו המציג את המתקנים, האימונים והאווירה.',
+      en: 'Video showcasing facilities, training, and vibe.',
+    },
+    category: 'gym',
+    tags: ['Fitness', 'Promo', 'Video'],
+    image: POSTERS.gym,
+    videoUrl: vidGym,
+    siteUrl: 'https://www.raisesfitness.com/',
+    fullDescription: {
+      he: 'צילום מרובה זוויות, קצב מהיר וגרפיקת לוגו.',
+      en: 'Multi-angle footage, fast pacing, branded graphics.',
+    },
+  },
+
+    // Restaurant
+  {
+    id: 301,
+    title: { he: 'מסעדת טעמים — סרט מסעדה', en: 'Matam Taamim — Restaurant Video' },
+    description: {
+      he: 'וידאו שמציג אווירה, מנות וחוויית שירות.',
+      en: 'Atmospheric video highlighting dishes and service.',
+    },
+    category: 'restaurant',
+    tags: ['Food', 'Promo', 'Video'],
+    image: POSTERS.restaurant,
+    videoUrl: vidRestaurant,
+    siteUrl: 'https://resturant-lemon-iota.vercel.app',
+    fullDescription: {
+      he: 'צילום מנות בתקריב, תאורה חמה והצגת סיפור קולינרי.',
+      en: 'Close-up dishes, warm lighting, storytelling.',
+    },
+  },
   // Branding
   {
     id: 101,
@@ -92,43 +163,9 @@ const projects: Project[] = [
     },
   },
 
-  // Gym
-  {
-    id: 201,
-    title: { he: 'RiseFitness — סרט מועדון כושר', en: 'RiseFitness — Gym Promo' },
-    description: {
-      he: 'וידאו המציג את המתקנים, האימונים והאווירה.',
-      en: 'Video showcasing facilities, training, and vibe.',
-    },
-    category: 'gym',
-    tags: ['Fitness', 'Promo', 'Video'],
-    image: POSTERS.gym,
-    videoUrl: vidGym,
-    siteUrl: 'https://www.raisesfitness.com/',
-    fullDescription: {
-      he: 'צילום מרובה זוויות, קצב מהיר וגרפיקת לוגו.',
-      en: 'Multi-angle footage, fast pacing, branded graphics.',
-    },
-  },
 
-  // Restaurant
-  {
-    id: 301,
-    title: { he: 'מסעדת טעמים — סרט מסעדה', en: 'Matam Taamim — Restaurant Video' },
-    description: {
-      he: 'וידאו שמציג אווירה, מנות וחוויית שירות.',
-      en: 'Atmospheric video highlighting dishes and service.',
-    },
-    category: 'restaurant',
-    tags: ['Food', 'Promo', 'Video'],
-    image: POSTERS.restaurant,
-    videoUrl: vidRestaurant,
-    siteUrl: 'https://resturant-lemon-iota.vercel.app',
-    fullDescription: {
-      he: 'צילום מנות בתקריב, תאורה חמה והצגת סיפור קולינרי.',
-      en: 'Close-up dishes, warm lighting, storytelling.',
-    },
-  },
+
+
 
   // Stores
   {
@@ -148,40 +185,7 @@ const projects: Project[] = [
       en: 'Dynamic catalog, filters, fast checkout.',
     },
   },
-  {
-    id: 402,
-    title: { he: 'MEIZA HERITAGE — חנות פרימיום', en: 'MEIZA HERITAGE — Premium Store' },
-    description: {
-      he: 'אתר יוקרתי לעיצוב הבית עם חוויית קנייה חלקה.',
-      en: 'Premium home-decor store with smooth shopping.',
-    },
-    category: 'stores',
-    tags: ['Store', 'Premium', 'UX'],
-    image: POSTERS.meiza,
-    videoUrl: vidMeiza,
-    siteUrl: '#',
-    fullDescription: {
-      he: 'עיצוב שחור-זהב, גלריות מעודנות ואופטימיזציה למובייל.',
-      en: 'Black-gold design, refined galleries, mobile-optimized.',
-    },
-  },
-  {
-    id: 403,
-    title: { he: 'Luxury Skin — קוסמטיקה', en: 'Luxury Skin — Cosmetics' },
-    description: {
-      he: 'חנות טיפוח עם סרטוני הדגמה ודפי מוצר מפורטים.',
-      en: 'Skincare store with product videos and rich PDPs.',
-    },
-    category: 'stores',
-    tags: ['Store', 'Beauty', 'Video'],
-    image: POSTERS.luxury,
-    videoUrl: vidLuxurySkin,
-    siteUrl: '#',
-    fullDescription: {
-      he: 'סקירות רכיבים, המלצות ומערכת חוות דעת.',
-      en: 'Ingredient breakdowns, recommendations, reviews.',
-    },
-  },
+
 ];
 
 export const Portfolio = () => {
@@ -219,7 +223,7 @@ export const Portfolio = () => {
           <span className="text-gradient-gold">{t('portfolio.title')}</span>
         </h2>
 
-        <div className="flex flex-wrap justify-center gap-3 mb-16">
+        {/* <div className="flex flex-wrap justify-center gap-3 mb-16">
           {filters.map(({ key, label }) => (
             <Button
               key={key}
@@ -230,7 +234,7 @@ export const Portfolio = () => {
               {label}
             </Button>
           ))}
-        </div>
+        </div> */}
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filtered.map((project) => (

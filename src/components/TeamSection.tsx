@@ -20,7 +20,23 @@ interface Member {
 }
 
 const team: Member[] = [
+ 
   {
+    id: "2",
+    name: { he: "הלאל", en: "Helal" },
+    title: { he: "מהנדס תוכנה ומפתח פולסטאק", en: "Full Stack Developer" },
+    desc: {
+      he: "מומחה בפיתוח מערכות מבוססות Node.js ו-React עם ניסיון של מעל 5 שנים במערכות חכמות.",
+      en: "Expert in full-stack systems with Node.js and React, 5+ years of experience in scalable web apps.",
+    },
+    image: helalImg, // ✅ bundled path
+    skills: ["React", "MongoDB", "Python", "Express", "Firebase"],
+    bio: {
+      he: "הלל מתמקד בארכיטקטורה, צד שרת ואינטגרציה עם מערכות חכמות בזמן אמת.",
+      en: "Helal focuses on architecture, backend engineering, and real-time smart integrations.",
+    },
+  },
+   {
     id: "1",
     name: { he: "בדר", en: "Bader" },
     title: { he: "מהנדס תוכנה", en: "Software Engineer" },
@@ -33,21 +49,6 @@ const team: Member[] = [
     bio: {
       he: "בדר מוביל את פיתוח צד הלקוח בחברת Luxury Tech עם דגש על ביצועים, חוויית משתמש ועיצוב נקי.",
       en: "Bader leads front-end development at Luxury Tech, focusing on performance, UX, and clean design.",
-    },
-  },
-  {
-    id: "2",
-    name: { he: "הלל", en: "Helal" },
-    title: { he: "מפתח פולסטאק", en: "Full Stack Developer" },
-    desc: {
-      he: "מומחה בפיתוח מערכות מבוססות Node.js ו-React עם ניסיון של מעל 5 שנים במערכות חכמות.",
-      en: "Expert in full-stack systems with Node.js and React, 5+ years of experience in scalable web apps.",
-    },
-    image: helalImg, // ✅ bundled path
-    skills: ["React", "MongoDB", "Python", "Express", "Firebase"],
-    bio: {
-      he: "הלל מתמקד בארכיטקטורה, צד שרת ואינטגרציה עם מערכות חכמות בזמן אמת.",
-      en: "Helal focuses on architecture, backend engineering, and real-time smart integrations.",
     },
   },
 ];
