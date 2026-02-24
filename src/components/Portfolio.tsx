@@ -40,7 +40,7 @@ const IMAGES = {
     "https://images.unsplash.com/photo-1503602642458-232111445657?w=1600&q=80&auto=format&fit=crop",
   luxury:
     "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=1600&q=80&auto=format&fit=crop",
-    perfect:"src/assets/hero-BujqUG72.jpg"
+    perfect:helalImg
 };
 
 // ==== PROJECT DATA ====
