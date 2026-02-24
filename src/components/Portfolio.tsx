@@ -4,7 +4,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
-
+import helalImg from "@/assets/hero-BujqUG72.jpg";
 // categories
 type ProjectCategory = "all" | "stores" | "branding" | "gym" | "restaurant";
 
@@ -181,7 +181,7 @@ const projects: Project[] = [
     category: "stores",
     tags: ["Store"],
     image: IMAGES.perfect,
-    dialogImage: IMAGES.perfect, // replace
+    dialogImage: helalImg, // replace
     siteUrl: "https://www.perfectwrap2021.com/",
     fullDescription: {
       he: "חנות אריזות ומתנות פרימיום המתמחה בעיצוב אריזות יוקרתיות, מארזים מותאמים אישית וחוויית מתנה בלתי נשכחת. שילוב של סטייל, איכות וירידה לפרטים הקטנים.",
