@@ -78,7 +78,7 @@ export const Footer = () => {
                 <Facebook size={24} />
               </a>
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/luxury_tech7?igsh=MW9xM202NjhpZHFnNA=="
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-accent transition-colors"
