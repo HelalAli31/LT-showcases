@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
@@ -7,6 +8,7 @@ import logo from "@/assets/logo.png";
 
 export const Hero = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   // Mouse parallax
   const [mx, setMx] = useState(0);
@@ -46,8 +48,7 @@ export const Hero = () => {
     []
   );
 
-  const scrollToContact = () =>
-    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+  const scrollToContact = () => navigate("/contact");
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
