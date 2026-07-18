@@ -26,6 +26,10 @@ const IMG = {
   ecommerce: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1600&q=80&auto=format&fit=crop",
   landing: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=1600&q=80&auto=format&fit=crop",
   cost: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1600&q=80&auto=format&fit=crop",
+  choosing: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1600&q=80&auto=format&fit=crop",
+  mistakes: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1600&q=80&auto=format&fit=crop",
+  seo: "https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?w=1600&q=80&auto=format&fit=crop",
+  maintenance: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1600&q=80&auto=format&fit=crop",
 };
 
 export const articles: Article[] = [
@@ -165,7 +169,7 @@ export const articles: Article[] = [
   },
   {
     slug: "5-signs-its-time-to-modernize-your-system",
-    category: "system-modernization",
+    category: "crm",
     date: "2026-03-02",
     readTime: 6,
     cover: IMG.legacy,
@@ -416,6 +420,294 @@ export const articles: Article[] = [
       },
     ],
   },
+  {
+    slug: "how-to-choose-a-web-development-company",
+    category: "general",
+    date: "2026-07-01",
+    readTime: 6,
+    cover: IMG.choosing,
+    title: {
+      he: "איך לבחור חברת פיתוח לעסק שלכם",
+      en: "How to Choose a Development Company for Your Business",
+    },
+    excerpt: {
+      he: "המחיר הזול ביותר לא תמיד הכי משתלם. הנה מה שבאמת כדאי לבדוק לפני שבוחרים מי יבנה לכם את המערכת או האתר.",
+      en: "The cheapest quote isn't always the best value. Here's what's actually worth checking before choosing who builds your system or website.",
+    },
+    content: [
+      {
+        type: "paragraph",
+        he: "בחירת חברת הפיתוח הנכונה משפיעה על הפרויקט הרבה יותר מכל בחירת עיצוב או טכנולוגיה בודדת. הנה כמה נקודות שכדאי לבדוק לפני שחותמים.",
+        en: "Choosing the right development company affects a project far more than any single design or technology choice. Here are a few things worth checking before you sign.",
+      },
+      {
+        type: "heading",
+        he: "1. תיק עבודות רלוונטי, לא רק יפה",
+        en: "1. A relevant portfolio, not just a pretty one",
+      },
+      {
+        type: "paragraph",
+        he: "תיק עבודות מרשים חשוב, אבל חשוב יותר לבדוק אם יש שם פרויקטים דומים לצורך שלכם — חנות אונליין, מערכת ניהול, או אתר תדמית. ניסיון ספציפי חוסך הפתעות.",
+        en: "An impressive portfolio matters, but it's more important to check whether it includes projects similar to your need — an online store, a management system, or a corporate site. Specific experience prevents surprises.",
+      },
+      {
+        type: "heading",
+        he: "2. תקשורת ברורה כבר מהשיחה הראשונה",
+        en: "2. Clear communication from the very first conversation",
+      },
+      {
+        type: "paragraph",
+        he: "אם כבר בפגישת האפיון קשה להבין מה בדיוק כלול, סביר שזה רק יחמיר במהלך הפרויקט. חברה טובה מסבירה בבירור מה נכלל, מה לא, ומה לוחות הזמנים הריאליים.",
+        en: "If it's already hard to understand exactly what's included during the scoping meeting, it will likely only get worse during the project. A good company clearly explains what's included, what isn't, and what realistic timelines look like.",
+      },
+      {
+        type: "heading",
+        he: "3. מה קורה אחרי ההשקה",
+        en: "3. What happens after launch",
+      },
+      {
+        type: "paragraph",
+        he: "פרויקט לא נגמר ברגע שהאתר עולה לאוויר. שאלו מראש איך נראית תמיכה שוטפת, מי מטפל בבאגים, ומה העלות של שינויים עתידיים.",
+        en: "A project doesn't end the moment the site goes live. Ask up front what ongoing support looks like, who handles bugs, and what future changes cost.",
+      },
+      {
+        type: "heading",
+        he: "4. בעלות מלאה על הקוד והנתונים",
+        en: "4. Full ownership of your code and data",
+      },
+      {
+        type: "paragraph",
+        he: "חשוב לוודא שבסיום הפרויקט הקוד, הדומיין והנתונים שייכים לכם באופן מלא, ולא נשארים 'נעולים' אצל הספק.",
+        en: "Make sure that at the end of the project, the code, domain, and data fully belong to you, and aren't left 'locked' with the vendor.",
+      },
+      {
+        type: "heading",
+        he: "5. המחיר הזול ביותר עולה הכי הרבה בטווח הארוך",
+        en: "5. The cheapest price often costs the most long-term",
+      },
+      {
+        type: "paragraph",
+        he: "פתרון זול שנבנה מהר ובלי תכנון עלול לדרוש בנייה מחדש תוך שנה. עדיף להשוות לפי ערך ואמינות, לא רק לפי המספר התחתון בהצעת המחיר.",
+        en: "A cheap solution built fast without planning may need to be rebuilt within a year. It's better to compare based on value and reliability, not just the bottom-line number on a quote.",
+      },
+      {
+        type: "paragraph",
+        he: "בסופו של דבר, חברת פיתוח טובה מתנהגת כמו שותפה עסקית — שואלת שאלות על המטרות שלכם, לא רק על הפיצ'רים הטכניים.",
+        en: "Ultimately, a good development company behaves like a business partner — asking questions about your goals, not just about technical features.",
+      },
+    ],
+  },
+  {
+    slug: "common-ecommerce-mistakes",
+    category: "digital-stores",
+    date: "2026-07-10",
+    readTime: 6,
+    cover: IMG.mistakes,
+    title: {
+      he: "5 טעויות נפוצות בבניית חנות אונליין",
+      en: "5 Common Mistakes When Building an Online Store",
+    },
+    excerpt: {
+      he: "חנויות רבות מפסידות מכירות בגלל טעויות קטנות שקל למנוע. הנה החמש הכי נפוצות שאנחנו רואים.",
+      en: "Many stores lose sales because of small, avoidable mistakes. Here are the five most common ones we see.",
+    },
+    content: [
+      {
+        type: "paragraph",
+        he: "בנינו והפעלנו לא מעט חנויות דיגיטליות, וראינו את אותן הטעויות חוזרות על עצמן אצל בעלי חנויות שונים. הנה החמש הכי נפוצות — ואיך נמנעים מהן.",
+        en: "We've built and run quite a few digital stores, and we keep seeing the same mistakes repeat across different store owners. Here are the five most common ones — and how to avoid them.",
+      },
+      {
+        type: "heading",
+        he: "1. תהליך קופה ארוך מדי",
+        en: "1. A checkout process that's too long",
+      },
+      {
+        type: "paragraph",
+        he: "כל שלב נוסף בקופה הוא הזדמנות נוספת ללקוח לוותר. יצירת חשבון חובה, טפסים ארוכים ואמצעי תשלום מוגבלים — כולם מפחיתים המרות.",
+        en: "Every extra checkout step is another chance for the customer to give up. Mandatory account creation, long forms, and limited payment methods all reduce conversions.",
+      },
+      {
+        type: "heading",
+        he: "2. תמונות מוצר באיכות נמוכה",
+        en: "2. Low-quality product images",
+      },
+      {
+        type: "paragraph",
+        he: "בקנייה אונליין הלקוח לא יכול לגעת במוצר — התמונות הן כל מה שיש לו. תמונות מטושטשות או לא עקביות פוגעות באמון עוד לפני שקוראים תיאור אחד.",
+        en: "In online shopping, the customer can't touch the product — the images are all they have. Blurry or inconsistent photos damage trust before a single description is even read.",
+      },
+      {
+        type: "heading",
+        he: "3. חוסר שקיפות במחיר המשלוח",
+        en: "3. Lack of transparency about shipping cost",
+      },
+      {
+        type: "paragraph",
+        he: "עלות משלוח שמתגלה רק בעמוד הקופה האחרון היא אחת הסיבות המובילות לנטישת עגלה. עדיף להציג אותה מוקדם ככל האפשר.",
+        en: "A shipping cost that only appears on the final checkout page is one of the leading causes of cart abandonment. It's better to show it as early as possible.",
+      },
+      {
+        type: "heading",
+        he: "4. אתר שלא נבדק על מובייל",
+        en: "4. A site that was never tested on mobile",
+      },
+      {
+        type: "paragraph",
+        he: "רוב הקונים מגיעים ממכשיר נייד. כפתורים קטנים מדי, טפסים לא נוחים או תמונות שלא נטענות במובייל פוגעים ישירות במכירות.",
+        en: "Most shoppers arrive on a mobile device. Buttons that are too small, awkward forms, or images that don't load on mobile directly hurt sales.",
+      },
+      {
+        type: "heading",
+        he: "5. אין תגובה למלאי אזל",
+        en: "5. No handling for out-of-stock items",
+      },
+      {
+        type: "paragraph",
+        he: "מוצר שמוצג כזמין אך אזל מהמלאי בפועל יוצר אכזבה מיותרת. חנות טובה מציגה מצב מלאי אמיתי, ומאפשרת להשאיר פרטים לעדכון כשהמוצר חוזר.",
+        en: "A product shown as available but actually out of stock creates unnecessary frustration. A good store shows real stock status and lets customers leave their details for a restock alert.",
+      },
+      {
+        type: "paragraph",
+        he: "רוב הטעויות האלה נפתרות כבר בשלב התכנון של החנות, לפני שנכתבת שורת קוד אחת — וזה בדיוק למה חשוב להתחיל את הפרויקט משיחה על התהליך, לא רק על העיצוב.",
+        en: "Most of these mistakes are solved back at the planning stage of the store, before a single line of code is written — which is exactly why it's important to start the project with a conversation about process, not just design.",
+      },
+    ],
+  },
+  {
+    slug: "seo-guide-for-corporate-sites",
+    category: "landing-pages",
+    date: "2026-07-14",
+    readTime: 7,
+    cover: IMG.seo,
+    title: {
+      he: "SEO לאתרי תדמית: המדריך המלא",
+      en: "SEO for Corporate Sites: The Complete Guide",
+    },
+    excerpt: {
+      he: "אתר תדמית יפה שאף אחד לא מוצא בגוגל לא שווה הרבה. הנה הבסיס שכל אתר עסקי צריך.",
+      en: "A beautiful corporate site nobody finds on Google isn't worth much. Here's the foundation every business site needs.",
+    },
+    content: [
+      {
+        type: "paragraph",
+        he: "קידום אורגני (SEO) הוא לא קסם חד פעמי אלא תהליך מתמשך, אבל הוא תמיד מתחיל מבסיס טכני נכון. הנה המרכיבים החשובים ביותר לאתר תדמית.",
+        en: "Organic SEO isn't a one-time trick — it's an ongoing process, but it always starts from the right technical foundation. Here are the most important pieces for a corporate site.",
+      },
+      {
+        type: "heading",
+        he: "מהירות טעינה",
+        en: "Load speed",
+      },
+      {
+        type: "paragraph",
+        he: "גוגל מדרג אתרים מהירים גבוה יותר, וגולשים עוזבים אתר שלא נטען תוך שניות ספורות. תמונות מותאמות, קוד נקי ואחסון מהיר הם הבסיס.",
+        en: "Google ranks fast sites higher, and visitors leave a site that doesn't load within a few seconds. Optimized images, clean code, and fast hosting are the foundation.",
+      },
+      {
+        type: "heading",
+        he: "מבנה עמודים וכותרות ברור",
+        en: "Clear page structure and headings",
+      },
+      {
+        type: "paragraph",
+        he: "כותרות מסודרות (H1, H2, H3) עוזרות גם למנועי החיפוש וגם לגולשים להבין מהר על מה העמוד, ומשפרות את הסיכוי להופיע בתוצאות הרלוונטיות.",
+        en: "Organized headings (H1, H2, H3) help both search engines and visitors quickly understand what the page is about, and improve the chance of appearing in relevant results.",
+      },
+      {
+        type: "heading",
+        he: "תוכן שעונה על שאלות אמיתיות",
+        en: "Content that answers real questions",
+      },
+      {
+        type: "paragraph",
+        he: "עמודי שירות שמסבירים בפירוט מה כלול, למי זה מתאים ומה התהליך — מדורגים טוב יותר מעמודים כלליים וקצרים, כי הם עונים בפועל על מה שאנשים מחפשים.",
+        en: "Service pages that explain in detail what's included, who it's for, and what the process looks like rank better than short, generic pages, because they actually answer what people are searching for.",
+      },
+      {
+        type: "heading",
+        he: "התאמה למובייל וחוויית משתמש",
+        en: "Mobile fit and user experience",
+      },
+      {
+        type: "paragraph",
+        he: "גוגל בודק את האתר קודם כל בגרסת המובייל שלו. אתר שלא נוח לגלישה בנייד נענש בדירוג, גם אם גרסת המחשב שלו מושלמת.",
+        en: "Google evaluates the site primarily via its mobile version. A site that's uncomfortable to browse on mobile gets penalized in rankings, even if its desktop version is perfect.",
+      },
+      {
+        type: "heading",
+        he: "קישורים פנימיים ונתונים מובנים",
+        en: "Internal linking and structured data",
+      },
+      {
+        type: "paragraph",
+        he: "קישור בין עמודי שירות, פורטפוליו ומאמרים עוזר לגוגל להבין את מבנה האתר, ותגיות נתונים מובנות (Schema) יכולות לשפר את האופן שבו האתר מוצג בתוצאות החיפוש.",
+        en: "Linking between service pages, portfolio, and articles helps Google understand the site's structure, and structured data tags (Schema) can improve how the site appears in search results.",
+      },
+      {
+        type: "paragraph",
+        he: "כל אתר תדמית שאנחנו בונים כולל את היסודות האלה מההתחלה — כי הרבה יותר קל להתחיל נכון מאשר לתקן אתר איטי ולא מסודר בדיעבד.",
+        en: "Every corporate site we build includes these foundations from the start — because it's far easier to start right than to fix a slow, disorganized site after the fact.",
+      },
+    ],
+  },
+  {
+    slug: "website-maintenance-why-it-matters",
+    category: "general",
+    date: "2026-07-16",
+    readTime: 5,
+    cover: IMG.maintenance,
+    title: {
+      he: "תחזוקת אתרים: למה זה קריטי ולא רק בנייה חד-פעמית",
+      en: "Website Maintenance: Why It's Critical, Not a One-Time Build",
+    },
+    excerpt: {
+      he: "אתר או מערכת שמושקים ולא מתוחזקים מזדקנים מהר יותר משנדמה. הנה למה תחזוקה היא חלק מהמוצר, לא תוספת.",
+      en: "A site or system that's launched and never maintained ages faster than you'd think. Here's why maintenance is part of the product, not an add-on.",
+    },
+    content: [
+      {
+        type: "paragraph",
+        he: "הרבה עסקים חושבים על בניית אתר או מערכת כפרויקט חד-פעמי: משלמים, מקבלים מוצר מוגמר, וזהו. בפועל, אתר שלא מתוחזק מתחיל להצטבר בעיות בשקט.",
+        en: "Many businesses think of building a site or system as a one-time project: you pay, you get a finished product, and that's it. In practice, a site that isn't maintained quietly starts accumulating problems.",
+      },
+      {
+        type: "heading",
+        he: "עדכוני אבטחה לא נגמרים",
+        en: "Security updates never stop",
+      },
+      {
+        type: "paragraph",
+        he: "ספריות וטכנולוגיות שהאתר מבוסס עליהן מתעדכנות כל הזמן, כולל תיקוני אבטחה. אתר שלא מתעדכן נשאר חשוף לפרצות שכבר נמצא להן פתרון.",
+        en: "The libraries and technologies a site is built on are constantly updated, including security fixes. A site that isn't updated stays exposed to vulnerabilities that already have a fix available.",
+      },
+      {
+        type: "heading",
+        he: "ביצועים נשחקים עם הזמן",
+        en: "Performance erodes over time",
+      },
+      {
+        type: "paragraph",
+        he: "תוכן שמצטבר, תמונות שלא מותאמות ותוספים ישנים מאטים אתר בהדרגה. מעקב שוטף מזהה בעיות ביצועים לפני שהן משפיעות על חוויית המשתמש.",
+        en: "Accumulating content, unoptimized images, and outdated add-ons gradually slow a site down. Ongoing monitoring catches performance issues before they affect the user experience.",
+      },
+      {
+        type: "heading",
+        he: "העסק שלכם משתנה — האתר צריך להשתנות איתו",
+        en: "Your business changes — the site needs to change with it",
+      },
+      {
+        type: "paragraph",
+        he: "שירותים חדשים, מבצעים, שינויים בתהליך העבודה — כל אלה דורשים עדכון באתר או במערכת. אתר סטטי שלא מתעדכן במהרה מפסיק לשקף את העסק שלכם באמת.",
+        en: "New services, promotions, changes to your workflow — all of these require updates to the site or system. A static site that isn't updated quickly stops truly reflecting your business.",
+      },
+      {
+        type: "paragraph",
+        he: "בגלל כל זה, אנחנו ממליצים ללקוחות שלנו לחשוב על תחזוקה כחלק מתקציב הפרויקט מההתחלה, ולא כהוצאה בלתי צפויה שמגיעה כשמשהו כבר נשבר.",
+        en: "Because of all this, we recommend our clients think of maintenance as part of the project budget from the start, not as an unexpected expense that shows up once something's already broken.",
+      },
+    ],
+  },
 ];
 
 export const getArticleBySlug = (slug: string) => articles.find((a) => a.slug === slug);
@@ -423,7 +715,6 @@ export const getArticleBySlug = (slug: string) => articles.find((a) => a.slug ==
 const categoryLabelKeys: Record<ArticleCategory, string> = {
   general: "blog.category.general",
   crm: "portfolio.filter.crm",
-  "system-modernization": "portfolio.filter.systemModernization",
   "digital-stores": "portfolio.filter.digitalStores",
   "landing-pages": "portfolio.filter.landingPages",
 };

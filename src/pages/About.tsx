@@ -5,12 +5,7 @@ import { Values } from "@/components/Values";
 import { TeamSection } from "@/components/TeamSection";
 import { ProcessSteps } from "@/components/ProcessSteps";
 import { Contact } from "@/components/Contact";
-
-const stats = [
-  { key: "about.stats.projects", value: "40+" },
-  { key: "about.stats.years", value: "10+" },
-  { key: "about.stats.satisfaction", value: "98%" },
-];
+import { StatsStrip } from "@/components/StatsStrip";
 
 const About = () => {
   const { t } = useLanguage();
@@ -36,14 +31,7 @@ const About = () => {
             </div>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
-            {stats.map((stat) => (
-              <div key={stat.key} className="text-center p-6 rounded-xl bg-card border border-border">
-                <div className="text-4xl font-bold text-gradient-gold mb-2">{stat.value}</div>
-                <div className="text-sm text-muted-foreground">{t(stat.key)}</div>
-              </div>
-            ))}
-          </div>
+          <StatsStrip />
         </div>
       </section>
 

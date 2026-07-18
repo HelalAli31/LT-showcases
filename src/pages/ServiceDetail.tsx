@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, ArrowLeft, ArrowRight, Play } from "lucide-react";
 import NotFound from "@/pages/NotFound";
 import { ProcessSteps } from "@/components/ProcessSteps";
+import { FaqAccordion } from "@/components/FaqAccordion";
 
 const ServiceDetail = () => {
   const { slug } = useParams();
@@ -41,8 +42,11 @@ const ServiceDetail = () => {
             <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-accent/20 flex items-center justify-center">
               <Icon className="text-accent" size={32} />
             </div>
-            <p className="text-xl text-muted-foreground leading-relaxed">
+            <p className="text-xl text-muted-foreground leading-relaxed mb-6">
               {service.description[language]}
+            </p>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              {service.descriptionExtra[language]}
             </p>
           </div>
 
@@ -133,7 +137,19 @@ const ServiceDetail = () => {
         </section>
       )}
 
-      <section className="py-20 bg-card text-center">
+      <section className="py-24 bg-card">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-center">
+              <span className="text-gradient-gold">{t("services.faqTitle")}</span>
+            </h2>
+            <p className="text-muted-foreground text-center mb-12">{t("services.faqSubtitle")}</p>
+            <FaqAccordion items={service.faq} />
+          </div>
+        </div>
+      </section>
+
+      <section className="py-20 bg-background text-center">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             <span className="text-gradient-gold">{t("services.ctaTitle")}</span>
