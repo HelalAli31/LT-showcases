@@ -1,4 +1,5 @@
-﻿import Head from "next/head";
+import type { Snapshot, Quote } from "./types";
+import Head from "next/head";
 import Link from "next/link";
 import {
   useEffect,
@@ -38,6 +39,10 @@ export function Shell({
   children: React.ReactNode;
   admin?: boolean;
 }) {
+  useEffect(() => {
+    document.documentElement.lang = "he";
+    document.documentElement.dir = "rtl";
+  }, []);
   return (
     <div className="lt-private" dir="rtl">
       <Head>
@@ -91,7 +96,9 @@ export function Field({
     <label className="lt-field">
       <span>{label}</span>
       {isValidElement(children)
-        ? cloneElement(children as ReactElement<any>, { "aria-label": label })
+        ? cloneElement(children as ReactElement<{ "aria-label"?: string }>, {
+            "aria-label": label,
+          })
         : children}
     </label>
   );
@@ -208,8 +215,8 @@ export function QuoteCard({
   snapshot: s,
   quote: q,
 }: {
-  snapshot: any;
-  quote: any;
+  snapshot: Snapshot;
+  quote: Quote;
 }) {
   return (
     <section className="lt-card lt-quote" aria-live="polite">

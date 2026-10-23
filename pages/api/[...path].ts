@@ -3,7 +3,7 @@ import { createApi } from "../../server/app.mjs";
 import { waitUntil } from "@vercel/functions";
 let handler;
 export const config = {
-  api: { bodyParser: false, responseLimit: "12mb", externalResolver: true },
+  api: { bodyParser: false, responseLimit: "4mb", externalResolver: true },
   maxDuration: 60,
 };
 export default async function api(req, res) {

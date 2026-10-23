@@ -97,6 +97,23 @@ try {
     path: "private-data/qa/public-desktop.png",
     fullPage: true,
   });
+  for (const route of [
+    "/services",
+    "/services/crm",
+    "/services/digital-stores",
+    "/services/landing-pages",
+    "/portfolio",
+    "/blog",
+    "/blog/signs-your-business-needs-a-crm",
+    "/about",
+    "/contact",
+  ]) {
+    const response = await page.goto(origin + route);
+    assert.equal(response.status(), 200);
+    await page.locator("main").waitFor();
+    assert.ok((await page.locator("main").innerText()).length > 100);
+  }
+  await page.goto(origin);
   await page.goto(origin + "/admin");
   await page.getByLabel("סיסמת מנהל").fill("test-password-long");
   await page.getByRole("button", { name: "כניסה מאובטחת" }).click();

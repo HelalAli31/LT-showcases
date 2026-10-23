@@ -1,4 +1,5 @@
-﻿import { useEffect, useState } from "react";
+import type { Settings, OfferInput, Product, Offer, Snapshot } from "./types";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { api, Field, Notice, DiscountRules, QuoteCard, money } from "./shared";
@@ -47,14 +48,17 @@ export default function Builder({
   settings,
 }: {
   offerId?: string;
-  settings: any;
+  settings: Settings;
 }) {
   const router = useRouter();
-  const [form, setForm] = useState<any>({ ...blank, rules: settings.rules }),
-    [catalog, setCatalog] = useState<any[]>(),
-    [doc, setDoc] = useState<any>(),
+  const [form, setForm] = useState<OfferInput>({
+      ...blank,
+      rules: settings.rules,
+    }),
+    [catalog, setCatalog] = useState<Product[]>(),
+    [doc, setDoc] = useState<Offer>(),
     [draftId, setDraftId] = useState(offerId),
-    [preview, setPreview] = useState<any>(),
+    [preview, setPreview] = useState<Snapshot>(),
     [previewTier, setPreviewTier] = useState(""),
     [previewMonths, setPreviewMonths] = useState(0),
     [busy, setBusy] = useState(false),
@@ -80,12 +84,12 @@ export default function Builder({
         })
         .catch((e) => setError(e.message));
     else setForm({ ...blank, rules: settings.rules });
-  }, [offerId]);
-  const set = (key: string, value: any) => {
+  }, [offerId, settings.rules]);
+  const set = (key: string, value: unknown) => {
     setForm((v) => ({ ...v, [key]: value }));
     setPreview(undefined);
   };
-  const tierUpdate = (name: string, key: string, value: any) => {
+  const tierUpdate = (name: string, key: string, value: unknown) => {
     set(
       "tiers",
       form.tiers.map((t) => (t.name === name ? { ...t, [key]: value } : t)),

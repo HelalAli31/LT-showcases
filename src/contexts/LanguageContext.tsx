@@ -17,10 +17,13 @@ const translations = {
     // Header
     "nav.about": "אודות",
     "nav.values": "ערכים",
-    "nav.portfolio": "פורטפוליו",
+    "nav.portfolio": "פרויקטים",
     "nav.videos": "סרטונים",
     "nav.contact": "צור קשר",
     "nav.cta": "קבלו הצעת מחיר",
+    "nav.home": "בית",
+    "nav.services": "שירותים",
+    "nav.blog": "מאמרים",
 
     // Hero
     "hero.headline": "בונים חוויות דיגיטליות שמייצרות אמון",
@@ -90,15 +93,122 @@ const translations = {
     "whatsapp.tooltip": "דברו איתנו בוואטסאפ",
     "whatsapp.message":
       "שלום, ראיתי את האתר של Luxury Tech ומתעניין/ת בבניית אתר.",
+
+    // Home (new)
+    "home.services.title": "מה אנחנו עושים",
+    "home.services.subtitle": "תחומי הליבה שמאפשרים לעסק שלכם לגדול בביטחון",
+    "home.services.viewAll": "לכל השירותים",
+    "home.portfolio.title": "עבודות נבחרות",
+    "home.portfolio.crmTitle": "עבודות נבחרות — מערכות ניהול",
+    "home.portfolio.storeTitle": "עבודות נבחרות — חנות דיגיטלית",
+    "home.portfolio.viewAll": "לכל הפרויקטים",
+    "home.contact.title": "בואו נבנה משהו מדויק יחד",
+    "home.contact.subtitle": "ספרו לנו על הפרויקט שלכם ונחזור אליכם בהקדם",
+    "home.contact.cta": "לעמוד יצירת קשר",
+    "home.stats.title": "המספרים שלנו",
+    "home.process.viewMore": "עוד עלינו",
+    "home.articles.title": "מהבלוג שלנו",
+    "home.articles.subtitle":
+      "תובנות ומדריכים מהעולם של פיתוח תוכנה ועסקים דיגיטליים",
+    "home.articles.viewAll": "לכל המאמרים",
+    "home.faq.viewAll": "עוד שאלות ותשובות",
+
+    // Services (page-level, new)
+    "services.pageTitle": "השירותים שלנו",
+    "services.pageSubtitle":
+      "פתרונות טכנולוגיים מקצה לקצה, מותאמים אישית לעסק שלכם",
+    "services.learnMore": "למידע נוסף",
+    "services.backToServices": "חזרה לשירותים",
+    "services.whatsIncluded": "מה כלול בשירות",
+    "services.ourProcess": "תהליך העבודה שלנו",
+    "services.relatedWork": "דוגמאות מהעבודות שלנו",
+    "services.faqTitle": "שאלות נפוצות",
+    "services.faqSubtitle":
+      "התשובות לשאלות שהכי הרבה שואלים אותנו לפני שמתחילים פרויקט",
+    "services.ctaTitle": "מוכנים להתחיל פרויקט?",
+    "services.ctaSubtitle":
+      "ספרו לנו על הצרכים שלכם ונבנה יחד את הפתרון המתאים",
+    "services.ctaButton": "דברו איתנו",
+
+    // Portfolio (page-level, new)
+    "portfolio.pageTitle": "הפרויקטים שלנו",
+    "portfolio.pageSubtitle":
+      "מבחר מהעבודות שביצענו עבור לקוחות ומיזמים בתחומים שונים",
+    "portfolio.concept": "עבודת קונספט",
+    "portfolio.videoDemo": "הדגמת מערכת בווידאו",
+    "portfolio.filter.crm": "מערכות CRM וניהול עסק",
+    "portfolio.filter.digitalStores": "חנויות דיגיטליות",
+    "portfolio.filter.landingPages": "דפי נחיתה ותדמית",
+
+    // Blog (new)
+    "blog.pageTitle": "מאמרים ותובנות",
+    "blog.pageSubtitle":
+      "תובנות, מדריכים וטרנדים מהעולם של פיתוח תוכנה ועסקים דיגיטליים",
+    "blog.readMore": "קראו עוד",
+    "blog.backToBlog": "חזרה למאמרים",
+    "blog.minRead": "דקות קריאה",
+    "blog.relatedArticles": "מאמרים נוספים",
+    "blog.notFound": "המאמר לא נמצא",
+    "blog.category.general": "תובנות כלליות",
+
+    // About (page-level, new)
+    "about.story.title": "הסיפור שלנו",
+    "about.story.p1":
+      "Luxury Tech נולדה מתוך אמונה פשוטה: לעסקים קטנים ובינוניים מגיע אותו רמת טכנולוגיה שמניעה חברות ענק — בלי המחיר והבירוקרטיה של חברות ענק.",
+    "about.story.p2":
+      "התחלנו כצוות מצומצם של מפתחים ומעצבים, ועם השנים בנינו עשרות מערכות, חנויות ואתרים ללקוחות בישראל ומעבר לים. כל פרויקט מלמד אותנו משהו חדש שאנחנו מביאים לפרויקט הבא.",
+    "about.story.p3":
+      "היום אנחנו משלבים פיתוח, עיצוב ואסטרטגיה תחת קורת גג אחת, כדי שכל לקוח יקבל פתרון שלם — לא רק קוד.",
+    "about.process.title": "איך אנחנו עובדים",
+    "about.process.subtitle": "תהליך ברור ושקוף מהרעיון ועד ההשקה",
+    "about.process.step1.title": "גילוי ואפיון",
+    "about.process.step1.desc":
+      "מכירים את העסק שלכם, המטרות והאתגרים, ומגדירים יחד את היקף הפרויקט.",
+    "about.process.step2.title": "עיצוב ואבטיפוס",
+    "about.process.step2.desc":
+      "בונים חוויית משתמש ועיצוב שמשקפים את המותג שלכם, לפני שורת קוד אחת.",
+    "about.process.step3.title": "פיתוח ובדיקות",
+    "about.process.step3.desc":
+      "פיתוח מודולרי, בדיקות לאורך הדרך, ועדכונים שוטפים על ההתקדמות.",
+    "about.process.step4.title": "השקה וליווי",
+    "about.process.step4.desc":
+      "עולים לאוויר, מלווים, ותומכים בכל שאלה או שינוי גם אחרי ההשקה.",
+    "about.stats.projects": "פרויקטים שהושלמו",
+    "about.stats.years": "שנות ניסיון משולבות",
+    "about.stats.satisfaction": "שביעות רצון לקוחות",
+    "about.cta.title": "בואו נכיר",
+    "about.cta.subtitle": "נשמח לשמוע על העסק שלכם ולבחון איך נוכל לעזור",
+    "about.cta.button": "צרו קשר",
+
+    // Contact (page-level, new)
+    "contact.pageSubtitle":
+      "הכי מהיר לדבר איתנו זה בוואטסאפ — נחזור אליכם באותו היום",
+    "contact.info.title": "פרטי התקשרות",
+    "contact.info.phone": "טלפון",
+    "contact.info.email": "אימייל",
+    "contact.info.hours": "שעות פעילות",
+    "contact.info.hoursValue": "א׳–ה׳, 09:00–18:00",
+    "contact.whatsapp.title": "דברו איתנו בוואטסאפ",
+    "contact.whatsapp.desc":
+      "הדרך המהירה ביותר לקבל מענה. שלחו הודעה ונחזור אליכם תוך זמן קצר.",
+    "contact.social.title": "עקבו אחרינו",
+
+    // 404 (new)
+    "notFound.title": "העמוד לא נמצא",
+    "notFound.message": "נראה שהעמוד שחיפשתם לא קיים או שהוסר.",
+    "notFound.cta": "חזרה לדף הבית",
   },
   en: {
     // Header
     "nav.about": "About",
     "nav.values": "Values",
-    "nav.portfolio": "Portfolio",
+    "nav.portfolio": "Projects",
     "nav.videos": "Videos",
     "nav.contact": "Contact",
     "nav.cta": "Get a Quote",
+    "nav.home": "Home",
+    "nav.services": "Services",
+    "nav.blog": "Articles",
 
     // Hero
     "hero.headline": "Crafting Digital Experiences That Inspire Confidence",
@@ -172,6 +282,115 @@ const translations = {
     "whatsapp.tooltip": "Chat with us on WhatsApp",
     "whatsapp.message":
       "Hi, I saw Luxury Tech and I am interested in a website.",
+
+    // Home (new)
+    "home.services.title": "What We Do",
+    "home.services.subtitle":
+      "The core disciplines that help your business grow with confidence",
+    "home.services.viewAll": "View All Services",
+    "home.portfolio.title": "Featured Work",
+    "home.portfolio.crmTitle": "Featured Work — Management Systems",
+    "home.portfolio.storeTitle": "Featured Work — Digital Store",
+    "home.portfolio.viewAll": "View All Projects",
+    "home.contact.title": "Let's Build Something Exceptional",
+    "home.contact.subtitle":
+      "Tell us about your project and we'll get back to you soon",
+    "home.contact.cta": "Go to Contact Page",
+    "home.stats.title": "Our Numbers",
+    "home.process.viewMore": "More About Us",
+    "home.articles.title": "From Our Blog",
+    "home.articles.subtitle":
+      "Insights and guides from the world of software and digital business",
+    "home.articles.viewAll": "View All Articles",
+    "home.faq.viewAll": "More Questions & Answers",
+
+    // Services (page-level, new)
+    "services.pageTitle": "Our Services",
+    "services.pageSubtitle":
+      "End-to-end technology solutions, tailored to your business",
+    "services.learnMore": "Learn More",
+    "services.backToServices": "Back to Services",
+    "services.whatsIncluded": "What's Included",
+    "services.ourProcess": "Our Process",
+    "services.relatedWork": "Examples of Our Work",
+    "services.faqTitle": "Frequently Asked Questions",
+    "services.faqSubtitle":
+      "Answers to what people most often ask us before starting a project",
+    "services.ctaTitle": "Ready to Start a Project?",
+    "services.ctaSubtitle":
+      "Tell us what you need and we'll design the right solution together",
+    "services.ctaButton": "Talk to Us",
+
+    // Portfolio (page-level, new)
+    "portfolio.pageTitle": "Our Projects",
+    "portfolio.pageSubtitle":
+      "A selection of work delivered for clients and ventures across industries",
+    "portfolio.concept": "Concept Work",
+    "portfolio.videoDemo": "Video System Demo",
+    "portfolio.filter.crm": "CRM & Business Management",
+    "portfolio.filter.digitalStores": "Digital Stores",
+    "portfolio.filter.landingPages": "Landing & Corporate Sites",
+
+    // Blog (new)
+    "blog.pageTitle": "Articles & Insights",
+    "blog.pageSubtitle":
+      "Insights, guides, and trends from the world of software and digital business",
+    "blog.readMore": "Read More",
+    "blog.backToBlog": "Back to Articles",
+    "blog.minRead": "min read",
+    "blog.relatedArticles": "More Articles",
+    "blog.notFound": "Article not found",
+    "blog.category.general": "General Insights",
+
+    // About (page-level, new)
+    "about.story.title": "Our Story",
+    "about.story.p1":
+      "Luxury Tech was founded on a simple belief: small and mid-sized businesses deserve the same level of technology that powers giant companies — without the price tag or bureaucracy.",
+    "about.story.p2":
+      "We started as a small team of developers and designers, and over the years we've built dozens of systems, stores, and websites for clients in Israel and beyond. Every project teaches us something we bring to the next one.",
+    "about.story.p3":
+      "Today we combine development, design, and strategy under one roof, so every client gets a complete solution — not just code.",
+    "about.process.title": "How We Work",
+    "about.process.subtitle":
+      "A clear, transparent process from idea to launch",
+    "about.process.step1.title": "Discovery & Scoping",
+    "about.process.step1.desc":
+      "We learn your business, goals, and challenges, and define the project scope together.",
+    "about.process.step2.title": "Design & Prototype",
+    "about.process.step2.desc":
+      "We craft UX and visuals that reflect your brand before a single line of code.",
+    "about.process.step3.title": "Development & Testing",
+    "about.process.step3.desc":
+      "Modular development, continuous testing, and regular progress updates.",
+    "about.process.step4.title": "Launch & Support",
+    "about.process.step4.desc":
+      "We go live, stay close, and support any question or change after launch too.",
+    "about.stats.projects": "Projects Completed",
+    "about.stats.years": "Combined Years of Experience",
+    "about.stats.satisfaction": "Client Satisfaction",
+    "about.cta.title": "Let's Talk",
+    "about.cta.subtitle":
+      "We'd love to hear about your business and see how we can help",
+    "about.cta.button": "Contact Us",
+
+    // Contact (page-level, new)
+    "contact.pageSubtitle":
+      "The fastest way to reach us is WhatsApp — we'll reply the same day",
+    "contact.info.title": "Contact Details",
+    "contact.info.phone": "Phone",
+    "contact.info.email": "Email",
+    "contact.info.hours": "Business Hours",
+    "contact.info.hoursValue": "Sun–Thu, 9:00 AM–6:00 PM",
+    "contact.whatsapp.title": "Chat with Us on WhatsApp",
+    "contact.whatsapp.desc":
+      "The fastest way to get a response. Send a message and we'll get back to you shortly.",
+    "contact.social.title": "Follow Us",
+
+    // 404 (new)
+    "notFound.title": "Page Not Found",
+    "notFound.message":
+      "The page you're looking for doesn't exist or has been moved.",
+    "notFound.cta": "Back to Home",
   },
 };
 

@@ -20,7 +20,10 @@ export function storage(config) {
     : null;
   return {
     async put(pdf, key) {
-      requireValue(pdf.length <= 7 * 1024 * 1024, "PDF exceeds storage limit");
+      requireValue(
+        pdf.length <= 4 * 1024 * 1024,
+        "PDF exceeds the 4MB secure download limit",
+      );
       const encrypted = seal(pdf, config);
       if (!s3) return { driver: "mongo", encrypted, digest: hash(pdf) };
       await s3.send(

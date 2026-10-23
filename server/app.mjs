@@ -108,6 +108,20 @@ export function createApi({
     }),
   );
   const settings = () => db.collection("settings").findOne({ _id: "main" });
+  const verifyEvidence = (contract) => {
+    const actual = digest(contract.evidence);
+    const mac = createHmac(
+      "sha256",
+      Buffer.from(config.DATA_ENCRYPTION_KEY, "hex"),
+    )
+      .update(actual)
+      .digest("hex");
+    requireValue(
+      actual === contract.evidenceDigest && mac === contract.evidenceMac,
+      "בדיקת שלמות ראיות החתימה נכשלה",
+      500,
+    );
+  };
   const admin = asyncRoute(async (req, res, next) => {
     const s = await db.collection("sessions").findOne({
       _id: hash(req.cookies.lt_admin || ""),
@@ -1096,17 +1110,18 @@ export function createApi({
             payload: 0,
             artifact: 0,
             idempotencyKey: 0,
-            evidenceMac: 0,
           },
         },
       );
       requireValue(c, "אין הרשאה למסמך", 404);
-      res.json(c);
+      verifyEvidence(c);
+      res.json({ ...c, evidenceMac: undefined });
     }),
   );
   async function download(req, res, filter) {
     const c = await db.collection("contracts").findOne(filter);
     requireValue(c, "המסמך אינו זמין", 404);
+    verifyEvidence(c);
     const pdf = await storage.get(c.artifact);
     res
       .type("pdf")
@@ -1204,6 +1219,7 @@ export function createApi({
         .findOne({ _id: req.params.id });
       requireValue(c, "לא נמצא", 404);
       const payload = unseal(c.payload, config);
+      verifyEvidence(c);
       res.json({
         ...c,
         artifact: undefined,

@@ -1,4 +1,5 @@
-﻿import { useEffect, useRef, useState } from "react";
+import type { OfferAccess, Contract, RequestError } from "./types";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import { api, Shell, Field, Notice, Otp, QuoteCard } from "./shared";
 function Signature({ onChange }: { onChange: (v: string) => void }) {
@@ -73,15 +74,15 @@ export default function Customer() {
       ? "contract-access/" + contractAccess
       : "offers/" + token;
   const [verified, setVerified] = useState(false),
-    [data, setData] = useState<any>(),
+    [data, setData] = useState<OfferAccess>(),
     [tier, setTier] = useState(""),
     [months, setMonths] = useState(0),
-    [agreement, setAgreement] = useState<any>(),
+    [agreement, setAgreement] = useState<{ html: string; digest: string }>(),
     [reviewed, setReviewed] = useState(false),
     [signature, setSignature] = useState(""),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
-    [contract, setContract] = useState<any>(),
+    [contract, setContract] = useState<Contract>(),
     [confirm, setConfirm] = useState(false);
   const [signer, setSigner] = useState({
     fullName: "",
@@ -99,7 +100,7 @@ export default function Customer() {
   const s = data?.snapshot,
     p = s?.tiers.find((p) => p.name === tier),
     q = s?.quotes.find((q) => q.tier === tier && q.months === months);
-  const load = async () => {
+  const load = useCallback(async () => {
     setError("");
     try {
       if (contractAccess) {
@@ -117,12 +118,12 @@ export default function Customer() {
       setTier(d.snapshot.tiers[0].name);
       setMonths(d.snapshot.tiers[0].rules[0].months);
     } catch (e) {
-      if ((e as any).status !== 401) setError((e as Error).message);
+      if ((e as RequestError).status !== 401) setError((e as Error).message);
     }
-  };
+  }, [base, contractAccess]);
   useEffect(() => {
     if (router.isReady) load();
-  }, [router.isReady, token, contractAccess]);
+  }, [router.isReady, load]);
   useEffect(() => {
     setAgreement(undefined);
     setReviewed(false);
@@ -136,7 +137,8 @@ export default function Customer() {
     }));
     key.current = "";
   }, [tier, months]);
-  const update = (k: string, v: any) => setSigner((s) => ({ ...s, [k]: v }));
+  const update = (k: string, v: string | boolean) =>
+    setSigner((s) => ({ ...s, [k]: v }));
   async function review() {
     setBusy(true);
     setError("");

@@ -1,6 +1,6 @@
 ﻿import Head from "next/head";
-import Index from "@/pages/Index";
-export default function Home() {
+import Home from "@/pages/Home";
+export default function Index() {
   return (
     <>
       <Head>
@@ -20,9 +20,8 @@ export default function Home() {
           content="https://www.luxurytech.org/og-image.jpg"
         />
         <meta name="twitter:card" content="summary_large_image" />
-        <link rel="canonical" href="https://www.luxurytech.org/" />
       </Head>
-      <Index />
+      <Home />
     </>
   );
 }

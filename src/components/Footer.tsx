@@ -1,15 +1,9 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
+import { Link } from '@/lib/public-router';
 
 export const Footer = () => {
   const { language, toggleLanguage, t } = useLanguage();
-
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
 
   return (
     <footer className="bg-card border-t border-border">
@@ -28,30 +22,21 @@ export const Footer = () => {
           <div>
             <h4 className="text-lg font-bold mb-4 text-foreground">{t('footer.links')}</h4>
             <nav className="space-y-2">
-              <button
-                onClick={() => scrollToSection('about')}
-                className="block text-muted-foreground hover:text-accent transition-colors"
-              >
-                {t('nav.about')}
-              </button>
-              <button
-                onClick={() => scrollToSection('portfolio')}
-                className="block text-muted-foreground hover:text-accent transition-colors"
-              >
+              <Link to="/services" className="block text-muted-foreground hover:text-accent transition-colors">
+                {t('nav.services')}
+              </Link>
+              <Link to="/portfolio" className="block text-muted-foreground hover:text-accent transition-colors">
                 {t('nav.portfolio')}
-              </button>
-              <button
-                onClick={() => scrollToSection('videos')}
-                className="block text-muted-foreground hover:text-accent transition-colors"
-              >
-                {t('nav.videos')}
-              </button>
-              <button
-                onClick={() => scrollToSection('contact')}
-                className="block text-muted-foreground hover:text-accent transition-colors"
-              >
+              </Link>
+              <Link to="/blog" className="block text-muted-foreground hover:text-accent transition-colors">
+                {t('nav.blog')}
+              </Link>
+              <Link to="/about" className="block text-muted-foreground hover:text-accent transition-colors">
+                {t('nav.about')}
+              </Link>
+              <Link to="/contact" className="block text-muted-foreground hover:text-accent transition-colors">
                 {t('nav.contact')}
-              </button>
+              </Link>
             </nav>
           </div>
 

@@ -1,4 +1,14 @@
-﻿import { useEffect, useState } from "react";
+import type {
+  Settings as SettingsData,
+  Product,
+  Dashboard as DashboardData,
+  Contract,
+  Offer,
+  LegalTemplate,
+  Rule,
+  RequestError,
+} from "./types";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import {
@@ -33,7 +43,7 @@ const labels: Record<string, string> = {
   test: "בדיקה",
   production: "מחייב",
 };
-export const statusLabel = (s: string) => labels[s] || s;
+const statusLabel = (s: string) => labels[s] || s;
 const localDate = (s: string) =>
   new Intl.DateTimeFormat("he-IL", {
     timeZone: "Asia/Jerusalem",
@@ -44,7 +54,7 @@ export default function Admin() {
   const router = useRouter(),
     path = (router.query.path || []) as string[],
     section = path[0] || "dashboard";
-  const [settings, setSettings] = useState<any>(),
+  const [settings, setSettings] = useState<SettingsData>(),
     [error, setError] = useState(""),
     [password, setPassword] = useState(""),
     [busy, setBusy] = useState(false),
@@ -53,7 +63,7 @@ export default function Admin() {
     try {
       setSettings(await api("admin/settings"));
     } catch (e) {
-      if ((e as any).status !== 401) setError((e as Error).message);
+      if ((e as RequestError).status !== 401) setError((e as Error).message);
     } finally {
       setLoading(false);
     }
@@ -146,24 +156,24 @@ export default function Admin() {
     </Shell>
   );
 }
-function useLoad(path: string) {
-  const [data, setData] = useState<any>(),
+function useLoad<T>(path: string) {
+  const [data, setData] = useState<T>(),
     [error, setError] = useState("");
-  const reload = async () => {
+  const reload = useCallback(async () => {
     try {
       setData(await api(path));
       setError("");
     } catch (e) {
       setError((e as Error).message);
     }
-  };
+  }, [path]);
   useEffect(() => {
     reload();
-  }, [path]);
+  }, [reload]);
   return { data, error, reload, setError };
 }
 function Dashboard() {
-  const { data, error } = useLoad("admin/dashboard");
+  const { data, error } = useLoad<DashboardData>("admin/dashboard");
   return (
     <>
       <h1>סקירה כללית</h1>
@@ -199,7 +209,9 @@ function Offers() {
   const [q, setQ] = useState(""),
     [status, setStatus] = useState(""),
     [query, setQuery] = useState("");
-  const { data, error, reload, setError } = useLoad("admin/offers" + query);
+  const { data, error, reload, setError } = useLoad<Offer[]>(
+    "admin/offers" + query,
+  );
   const router = useRouter();
   async function action(id: string, kind: string) {
     try {
@@ -296,16 +308,21 @@ function Offers() {
   );
 }
 function Pricing() {
-  const { data: catalog, error, setError, reload } = useLoad("admin/catalog");
-  const [rules, setRules] = useState<any[]>(),
+  const {
+    data: catalog,
+    error,
+    setError,
+    reload,
+  } = useLoad<Product[]>("admin/catalog");
+  const [rules, setRules] = useState<Rule[]>(),
     [message, setMessage] = useState(""),
-    [edit, setEdit] = useState<any>();
+    [edit, setEdit] = useState<Product>();
   useEffect(() => {
     api("admin/rules")
       .then(setRules)
       .catch((e) => setError(e.message));
-  }, []);
-  async function save(path: string, body: any) {
+  }, [setError]);
+  async function save(path: string, body: unknown) {
     try {
       await api(path, "PUT", body);
       setMessage("נשמר. הצעות שפורסמו לא השתנו.");
@@ -437,7 +454,13 @@ function Pricing() {
     </>
   );
 }
-function Settings({ value, onSaved }: { value: any; onSaved: () => void }) {
+function Settings({
+  value,
+  onSaved,
+}: {
+  value: SettingsData;
+  onSaved: () => void;
+}) {
   const [form, setForm] = useState(() =>
       Object.fromEntries(
         [
@@ -547,10 +570,11 @@ function Settings({ value, onSaved }: { value: any; onSaved: () => void }) {
   );
 }
 function Templates() {
-  const { data, error, reload, setError } = useLoad("admin/templates");
-  const [edit, setEdit] = useState<any>(),
+  const { data, error, reload, setError } =
+    useLoad<LegalTemplate[]>("admin/templates");
+  const [edit, setEdit] = useState<Partial<LegalTemplate>>(),
     [reviewer, setReviewer] = useState(""),
-    [approval, setApproval] = useState<any>();
+    [approval, setApproval] = useState<LegalTemplate>();
   return (
     <>
       <h1>תבניות הסכם וגרסאות</h1>
@@ -662,7 +686,7 @@ function Templates() {
   );
 }
 function Contracts({ contractId }: { contractId?: string }) {
-  const { data, error, reload, setError } = useLoad(
+  const { data, error, reload, setError } = useLoad<Contract>(
     contractId ? "admin/contracts/" + contractId : "admin/contracts",
   );
   const [query, setQuery] = useState(""),
