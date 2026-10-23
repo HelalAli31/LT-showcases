@@ -2,7 +2,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
-import logo from "@/assets/logo.png"; // ✅ import from src/assets
+const logo = "/assets/logo.png";
 
 export const Header = () => {
   const { language, toggleLanguage, t } = useLanguage();
@@ -15,7 +15,6 @@ export const Header = () => {
       setMobileMenuOpen(false);
     }
   };
-console.log("a");
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
       <nav className="container mx-auto px-4 py-4 flex items-center justify-between">

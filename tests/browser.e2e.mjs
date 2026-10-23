@@ -1,0 +1,271 @@
+﻿import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { SMTPServer } from "smtp-server";
+import { chromium } from "playwright";
+import { PDFDocument } from "pdf-lib";
+import { setup } from "./helpers/fixture.mjs";
+const f = await setup();
+const mailbox = [];
+const smtp = new SMTPServer({
+  secure: false,
+  disabledCommands: ["STARTTLS"],
+  onAuth(auth, session, cb) {
+    if (
+      auth.username === "sender@example.test" &&
+      auth.password === "test-only"
+    )
+      cb(null, { user: "test" });
+    else cb(Error("Authentication failed"));
+  },
+  onData(stream, session, cb) {
+    let raw = "";
+    stream.on("data", (chunk) => (raw += chunk));
+    stream.on("end", () => {
+      const offset = raw.indexOf("\r\n\r\n"),
+        headers = raw.slice(0, offset),
+        body = raw.slice(offset + 4);
+      mailbox.push(
+        /Content-Transfer-Encoding: base64/i.test(headers)
+          ? Buffer.from(body.replace(/\s/g, ""), "base64").toString()
+          : body,
+      );
+      cb();
+    });
+  },
+});
+await new Promise((r) => smtp.listen(2526, "127.0.0.1", r));
+const origin = "http://localhost:8090";
+const child = spawn(
+  process.execPath,
+  ["node_modules/next/dist/bin/next", "start", "-p", "8090"],
+  {
+    env: {
+      ...process.env,
+      ...f.config,
+      APP_ORIGIN: origin,
+      MONGODB_URI: f.uri,
+      MONGODB_DB: "LT_tests",
+      SMTP_HOST: "127.0.0.1",
+      SMTP_PORT: "2526",
+      SMTP_SECURE: "false",
+      META_SEND_ENABLED: "false",
+      BINDING_SIGNATURES_ENABLED: "false",
+      NODE_ENV: "production",
+      VERCEL: "",
+    },
+    stdio: ["ignore", "pipe", "pipe"],
+  },
+);
+let logs = "";
+child.stdout.on("data", (c) => (logs += c));
+child.stderr.on("data", (c) => (logs += c));
+let browser;
+const errors = [];
+try {
+  let ready = false;
+  for (let i = 0; i < 100; i++) {
+    try {
+      const r = await fetch(origin + "/api/health");
+      if (r.ok) {
+        ready = true;
+        break;
+      }
+    } catch {}
+    await new Promise((r) => setTimeout(r, 300));
+  }
+  assert.ok(ready, "Next server did not start: " + logs.slice(-1500));
+  browser = await chromium.launch();
+  const ctx = await browser.newContext({
+      viewport: { width: 1440, height: 1000 },
+    }),
+    page = await ctx.newPage();
+  page.on("pageerror", (e) => errors.push(e.message));
+  mkdirSync("private-data/qa", { recursive: true });
+  await page.goto(origin);
+  await page.locator("header img").first().waitFor();
+  assert.ok((await page.locator("body").innerText()).includes("Luxury"));
+  assert.equal(
+    await page.evaluate(() =>
+      Array.from(document.querySelectorAll('img[src^="/assets"]')).every(
+        (i) => i.complete && i.naturalWidth > 0,
+      ),
+    ),
+    true,
+  );
+  await page.screenshot({
+    path: "private-data/qa/public-desktop.png",
+    fullPage: true,
+  });
+  await page.goto(origin + "/admin");
+  await page.getByLabel("סיסמת מנהל").fill("test-password-long");
+  await page.getByRole("button", { name: "כניסה מאובטחת" }).click();
+  await page.getByRole("heading", { name: "סקירה כללית" }).waitFor();
+  await page.getByRole("link", { name: "הצעה חדשה", exact: true }).click();
+  await page
+    .getByLabel("כותרת ההצעה", { exact: true })
+    .fill("הצעה אישית — בדיקת דפדפן");
+  await page.getByLabel("תווית לקוח פנימית").fill("לקוח QA");
+  await page.getByLabel("דוא״ל הנמען").fill("client@example.test");
+  await page.getByLabel("תוקף הצעה").fill("2099-01-01T12:00");
+  await page
+    .locator(".lt-tier-editor")
+    .filter({ hasText: "PRO" })
+    .getByRole("checkbox")
+    .first()
+    .check();
+  const fields = {
+    "תיאור הפרויקט": "חנות מקצועית עבור לקוח בדיקה",
+    "היקף עבודה ותוצרים מאושרים":
+      "הקמת חנות עד 200 מוצרים בהתאם לאפיון המאושר.",
+    "אבני דרך": "אפיון, פיתוח ומסירה",
+    "מועדי מסירה ותלות בשיתוף פעולה": "30 ימי עבודה לאחר מסירת תכנים",
+    "תנאי תשלום, תחילת עבודה והפעלת שירות":
+      "הקמה מראש; שירות חודשי בתחילת כל חודש",
+    "ביטול וסיום התקשרות": "בקשה בכתב בכפוף לתקופת ההתחייבות והדין",
+    "עלויות ושירותי צד שלישי": "דומיין וסליקה נפרדים",
+    "זכויות קניין רוחני ורישיון שימוש":
+      "רישיון שימוש בתקופת השירות. זכויות ברכיבים קודמים נשארות אצל הספק.",
+    "בעלות מידע, יצוא נתונים וסיום שירות": "יצוא CSV לפי בקשה בסיום השירות",
+    "חלוקת אחריות, מגבלות וסעדים": "לפי הנוסח המאושר והדין החל",
+    "דין, סמכות שיפוט ויישוב מחלוקות": "דין ישראלי בכפוף להוראות דין מחייבות",
+    "תנאים לאחר ההתחייבות וחידוש": "מחיר ותנאי חידוש בהסכמה חדשה בכתב",
+    "כמויות ומגבלות": "עד 200 מוצרים",
+    החרגות: "פיתוח חדש אינו כלול",
+    "רמת תמיכה, זמני מענה וחריגים": "תמיכה בימי עסקים לפי ההסכם",
+  };
+  for (const [label, value] of Object.entries(fields))
+    await page.getByLabel(label, { exact: true }).fill(value);
+  await page.getByLabel("טיפול במס", { exact: true }).selectOption("inclusive");
+  await page.getByLabel("שיעור מס %", { exact: true }).fill("18");
+  await page.getByRole("button", { name: "שמירת טיוטה ותצוגה מקדימה" }).click();
+  await page
+    .getByRole("heading", { name: "תצוגה מקדימה לפני פרסום" })
+    .waitFor();
+  await page.screenshot({
+    path: "private-data/qa/admin-builder.png",
+    fullPage: true,
+  });
+  await page
+    .getByRole("button", { name: "פרסום הצעה קפואה ויצירת קישור" })
+    .click();
+  const linkInput = page.getByLabel("קישור פרטי", { exact: true });
+  await linkInput.waitFor();
+  const link = await linkInput.inputValue();
+  assert.ok(link.includes("/offer/"));
+  const customerContext = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+    }),
+    customer = await customerContext.newPage();
+  customer.on("pageerror", (e) => errors.push(e.message));
+  await customer.goto(link);
+  await customer
+    .getByLabel("דוא״ל", { exact: true })
+    .fill("client@example.test");
+  await customer.getByRole("button", { name: "שליחת קוד אימות" }).click();
+  await customer.getByLabel("קוד חד־פעמי").waitFor();
+  assert.ok(mailbox.length > 0, "SMTP message missing");
+  const code = mailbox.at(-1).match(/\b\d{6}\b/)?.[0];
+  assert.ok(code, "OTP missing from test SMTP email");
+  await customer.getByLabel("קוד חד־פעמי").fill(code);
+  await customer.getByRole("button", { name: "אימות וכניסה" }).click();
+  await customer
+    .getByRole("heading", { name: "הצעה אישית — בדיקת דפדפן" })
+    .waitFor();
+  await customer
+    .getByLabel("תקופת התחייבות", { exact: true })
+    .selectOption("24");
+  assert.ok(
+    (await customer.locator(".lt-quote").innerText()).includes("10,028.40"),
+  );
+  assert.ok(
+    (await customer.locator(".lt-price").innerText()).includes("314.10"),
+  );
+  assert.equal(
+    await customer.evaluate(
+      () => document.documentElement.scrollWidth > innerWidth,
+    ),
+    false,
+  );
+  await customer.screenshot({
+    path: "private-data/qa/customer-mobile.png",
+    fullPage: true,
+  });
+  await customer
+    .getByRole("button", { name: "עיון בהסכם המלא והמשך לחתימה" })
+    .click();
+  await customer.locator("iframe").waitFor();
+  await customer
+    .getByRole("checkbox", { name: "קראתי את ההסכם המלא ואת נספחי ההצעה" })
+    .check();
+  await customer.getByLabel("שם מלא", { exact: true }).fill("לקוח בדיקה");
+  await customer.getByLabel("טלפון", { exact: true }).fill("0501234567");
+  await customer.getByRole("checkbox", { name: "אני מקבל במפורש" }).check();
+  await customer
+    .getByRole("checkbox", { name: "קראתי ומאשר את הודעת הפרטיות" })
+    .check();
+  const canvas = customer.locator("canvas");
+  await canvas.scrollIntoViewIfNeeded();
+  const box = await canvas.boundingBox();
+  await customer.mouse.move(box.x + 40, box.y + 100);
+  await customer.mouse.down();
+  for (let i = 0; i < 30; i++)
+    await customer.mouse.move(
+      box.x + 40 + i * 6,
+      box.y + 80 + Math.sin(i / 3) * 35,
+    );
+  await customer.mouse.up();
+  await customer.getByRole("checkbox", { name: "זו חתימתי" }).check();
+  await customer
+    .getByRole("button", { name: "המשך לאישור חתימת בדיקה" })
+    .click();
+  await customer
+    .getByRole("button", { name: "אני מאשר וחותם", exact: true })
+    .click();
+  await customer
+    .getByRole("heading", { name: "חתימת הבדיקה הושלמה" })
+    .waitFor({ timeout: 60000 });
+  const downloadPromise = customer.waitForEvent("download");
+  await customer.getByRole("link", { name: "הורדת העתק ההסכם" }).click();
+  const download = await downloadPromise;
+  await download.saveAs("private-data/qa/signed-test.pdf");
+  const contract = await f.db.collection("contracts").findOne();
+  assert.ok(contract);
+  assert.equal(contract.monthly, 31410);
+  assert.equal(contract.total, 1002840);
+  await customer.screenshot({
+    path: "private-data/qa/signed-success.png",
+    fullPage: true,
+  });
+  await page.goto(origin + "/admin/contracts");
+  await page.getByRole("link", { name: "לקוח QA", exact: true }).waitFor();
+  await page.getByRole("link", { name: "לקוח QA", exact: true }).click();
+  await page.getByRole("heading", { name: "התראות", exact: true }).waitFor();
+  await page.screenshot({
+    path: "private-data/qa/admin-contract.png",
+    fullPage: true,
+  });
+  assert.deepEqual(errors, [], "Browser JavaScript errors");
+  console.log(
+    "Browser E2E passed: public site, admin builder/publication, real test SMTP OTP, mobile exact pricing, full agreement, canvas signing, encrypted PDF download and contract dashboard.",
+  );
+} catch (e) {
+  if (browser) {
+    const pages = browser.contexts().flatMap((c) => c.pages());
+    for (let i = 0; i < pages.length; i++)
+      await pages[i]
+        .screenshot({
+          path: `private-data/qa/failure-${i}.png`,
+          fullPage: true,
+        })
+        .catch(() => {});
+  }
+  console.error(e);
+  process.exitCode = 1;
+} finally {
+  await browser?.close();
+  child.kill();
+  await new Promise((r) => child.once("exit", r));
+  await new Promise((r) => smtp.close(r));
+  await f.close();
+}

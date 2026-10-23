@@ -4,7 +4,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
-import helalImg from "@/assets/hero-BujqUG72.jpg";
+const helalImg = "/assets/hero-BujqUG72.jpg";
 // categories
 type ProjectCategory = "all" | "stores" | "branding" | "gym" | "restaurant";
 
@@ -30,17 +30,15 @@ const IMAGES = {
     "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1600&q=80&auto=format&fit=crop",
   brand2:
     "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1600&q=80&auto=format&fit=crop",
-  gym:
-    "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1600&q=80&auto=format&fit=crop",
+  gym: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1600&q=80&auto=format&fit=crop",
   restaurant:
     "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=80&auto=format&fit=crop",
-  nova:
-    "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?w=1600&q=80&auto=format&fit=crop",
+  nova: "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?w=1600&q=80&auto=format&fit=crop",
   meiza:
     "https://images.unsplash.com/photo-1503602642458-232111445657?w=1600&q=80&auto=format&fit=crop",
   luxury:
     "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=1600&q=80&auto=format&fit=crop",
-    perfect:helalImg
+  perfect: helalImg,
 };
 
 // ==== PROJECT DATA ====
@@ -49,7 +47,10 @@ const projects: Project[] = [
   // Branding
   {
     id: 101,
-    title: { he: "جمعية الوفاء — תדמית", en: "Al-Wafaa Association — Branding" },
+    title: {
+      he: "جمعية الوفاء — תדמית",
+      en: "Al-Wafaa Association — Branding",
+    },
     description: {
       he: "תדמית המציגה את פעילות העמותה וההשפעה שלה בקהילה.",
       en: "Brand piece showing the association’s community impact.",
@@ -66,7 +67,10 @@ const projects: Project[] = [
   },
   {
     id: 102,
-    title: { he: "מו.על – עבודות גמר איכותיות", en: "Mo.Al — Premium Final Works" },
+    title: {
+      he: "מו.על – עבודות גמר איכותיות",
+      en: "Mo.Al — Premium Final Works",
+    },
     description: {
       he: "עבודות גמר ברמה הגבוהה ביותר. ריצוף, שיפוצים וצבע.",
       en: "Top-tier finishing works. Tiling, renovations, painting.",
@@ -81,7 +85,7 @@ const projects: Project[] = [
       en: "Professional showcase of projects, process, and results.",
     },
   },
-    // Gym
+  // Gym
   {
     id: 201,
     title: { he: "RiseFitness — מועדון כושר", en: "RiseFitness — Gym" },
@@ -100,7 +104,7 @@ const projects: Project[] = [
     },
   },
 
-    // Restaurant
+  // Restaurant
   {
     id: 301,
     title: { he: "מסעדת טעמים — מסעדה", en: "Matam Taamim — Restaurant" },
@@ -139,7 +143,10 @@ const projects: Project[] = [
   },
   {
     id: 402,
-    title: { he: "MEIZA HERITAGE — חנות פרימיום", en: "MEIZA HERITAGE — Premium Store" },
+    title: {
+      he: "MEIZA HERITAGE — חנות פרימיום",
+      en: "MEIZA HERITAGE — Premium Store",
+    },
     description: {
       he: "אתר יוקרתי לעיצוב הבית עם חוויית קנייה חלקה.",
       en: "Premium home-decor store with smooth shopping.",
@@ -210,7 +217,8 @@ export const Portfolio = () => {
     { key: "restaurant", label: label("restaurant", "מסעדה", "Restaurant") },
   ];
 
-  const filtered = filter === "all" ? projects : projects.filter((p) => p.category === filter);
+  const filtered =
+    filter === "all" ? projects : projects.filter((p) => p.category === filter);
 
   const onVisitClick = (e: MouseEvent, url?: string) => {
     e.stopPropagation(); // do not open the dialog
@@ -257,19 +265,30 @@ export const Portfolio = () => {
               </div>
 
               <div className="p-6">
-                <h3 className="text-xl font-bold mb-2 text-foreground">{project.title[language]}</h3>
-                <p className="text-muted-foreground mb-4">{project.description[language]}</p>
+                <h3 className="text-xl font-bold mb-2 text-foreground">
+                  {project.title[language]}
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  {project.description[language]}
+                </p>
 
                 <div className="flex flex-wrap gap-2 mb-4">
                   {project.tags.map((tag, index) => (
-                    <Badge key={index} variant="outline" className="border-accent/50 text-accent">
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="border-accent/50 text-accent"
+                    >
                       {tag}
                     </Badge>
                   ))}
                 </div>
 
                 <div className="flex gap-3">
-                  <Button variant="secondary" onClick={() => setSelectedProject(project)}>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setSelectedProject(project)}
+                  >
                     {language === "he" ? "צפייה" : "View"}
                   </Button>
 
@@ -295,7 +314,10 @@ export const Portfolio = () => {
           ))}
         </div>
 
-        <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
+        <Dialog
+          open={!!selectedProject}
+          onOpenChange={() => setSelectedProject(null)}
+        >
           <DialogContent className="max-w-5xl p-0 overflow-hidden">
             {selectedProject && (
               <div className="space-y-0">
@@ -310,13 +332,23 @@ export const Portfolio = () => {
 
                 <div className="p-6">
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <h3 className="text-2xl font-bold text-foreground">{selectedProject.title[language]}</h3>
+                    <h3 className="text-2xl font-bold text-foreground">
+                      {selectedProject.title[language]}
+                    </h3>
 
                     <Button
                       variant="outline"
                       className="gap-2"
-                      onClick={(e) => onVisitClick(e as unknown as MouseEvent, selectedProject.siteUrl)}
-                      disabled={!selectedProject.siteUrl || selectedProject.siteUrl === "#"}
+                      onClick={(e) =>
+                        onVisitClick(
+                          e as unknown as MouseEvent,
+                          selectedProject.siteUrl,
+                        )
+                      }
+                      disabled={
+                        !selectedProject.siteUrl ||
+                        selectedProject.siteUrl === "#"
+                      }
                     >
                       <ExternalLink size={16} />
                       {language === "he" ? "לביקור באתר" : "Visit Site"}
@@ -329,7 +361,11 @@ export const Portfolio = () => {
 
                   <div className="flex flex-wrap gap-2">
                     {selectedProject.tags.map((tag, index) => (
-                      <Badge key={index} variant="outline" className="border-accent/50 text-accent">
+                      <Badge
+                        key={index}
+                        variant="outline"
+                        className="border-accent/50 text-accent"
+                      >
                         {tag}
                       </Badge>
                     ))}
