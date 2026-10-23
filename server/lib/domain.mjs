@@ -50,6 +50,14 @@ export const offerSchema = z
     }),
     discountSetup: z.boolean().default(false),
     internalNotes: paragraph.default(""),
+    composition: z
+      .object({
+        specialRequirements: z.string().max(8000),
+        deliveryDays: z.number().int().min(1).max(365),
+        revisionRounds: z.number().int().min(0).max(20),
+        depositPercent: z.number().int().min(0).max(100),
+      })
+      .optional(),
     attachments: z
       .array(z.string().regex(/^[a-f0-9]{36}$/))
       .max(10)
@@ -96,6 +104,7 @@ export function snapshotFrom(input, settings, legal) {
   const snapshot = {
     ...base,
     product: data.product,
+    clientName: data.clientLabel,
     expires: data.expires,
     description: data.description,
     scope: data.scope,

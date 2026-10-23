@@ -119,10 +119,7 @@ try {
   await page.getByRole("button", { name: "כניסה מאובטחת" }).click();
   await page.getByRole("heading", { name: "סקירה כללית" }).waitFor();
   await page.getByRole("link", { name: "הצעה חדשה", exact: true }).click();
-  await page
-    .getByLabel("כותרת ההצעה", { exact: true })
-    .fill("הצעה אישית — בדיקת דפדפן");
-  await page.getByLabel("תווית לקוח פנימית").fill("לקוח QA");
+  await page.getByLabel("שם הלקוח או העסק").fill("לקוח QA");
   await page.getByLabel("דוא״ל הנמען").fill("client@example.test");
   await page.getByLabel("תוקף הצעה").fill("2099-01-01T12:00");
   await page
@@ -131,41 +128,58 @@ try {
     .getByRole("checkbox")
     .first()
     .check();
-  const fields = {
-    "תיאור הפרויקט": "חנות מקצועית עבור לקוח בדיקה",
-    "היקף עבודה ותוצרים מאושרים":
-      "הקמת חנות עד 200 מוצרים בהתאם לאפיון המאושר.",
-    "אבני דרך": "אפיון, פיתוח ומסירה",
-    "מועדי מסירה ותלות בשיתוף פעולה": "30 ימי עבודה לאחר מסירת תכנים",
-    "תנאי תשלום, תחילת עבודה והפעלת שירות":
-      "הקמה מראש; שירות חודשי בתחילת כל חודש",
-    "ביטול וסיום התקשרות": "בקשה בכתב בכפוף לתקופת ההתחייבות והדין",
-    "עלויות ושירותי צד שלישי": "דומיין וסליקה נפרדים",
-    "זכויות קניין רוחני ורישיון שימוש":
-      "רישיון שימוש בתקופת השירות. זכויות ברכיבים קודמים נשארות אצל הספק.",
-    "בעלות מידע, יצוא נתונים וסיום שירות": "יצוא CSV לפי בקשה בסיום השירות",
-    "חלוקת אחריות, מגבלות וסעדים": "לפי הנוסח המאושר והדין החל",
-    "דין, סמכות שיפוט ויישוב מחלוקות": "דין ישראלי בכפוף להוראות דין מחייבות",
-    "תנאים לאחר ההתחייבות וחידוש": "מחיר ותנאי חידוש בהסכמה חדשה בכתב",
-    "כמויות ומגבלות": "עד 200 מוצרים",
-    החרגות: "פיתוח חדש אינו כלול",
-    "רמת תמיכה, זמני מענה וחריגים": "תמיכה בימי עסקים לפי ההסכם",
-  };
-  for (const [label, value] of Object.entries(fields))
-    await page.getByLabel(label, { exact: true }).fill(value);
+  await page
+    .getByLabel("מה הפרויקט צריך לעשות?")
+    .fill("חנות מקצועית למותג בגדים עם ניהול הזמנות");
+  await page
+    .getByLabel("דרישות מיוחדות ודברים שחשוב לכלול")
+    .fill("חיבור למלאי קיים לאחר קבלת גישת API");
+  await page.getByLabel("דמי הקמה PRO ₪").fill("2490.00");
+  await page.getByLabel("מחיר חודשי PRO ₪").fill("349.00");
   await page.getByLabel("טיפול במס", { exact: true }).selectOption("inclusive");
   await page.getByLabel("שיעור מס %", { exact: true }).fill("18");
-  await page.getByRole("button", { name: "שמירת טיוטה ותצוגה מקדימה" }).click();
-  await page
-    .getByRole("heading", { name: "תצוגה מקדימה לפני פרסום" })
-    .waitFor();
+  await page.screenshot({
+    path: "private-data/qa/guided-builder.png",
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert.equal(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth > innerWidth,
+    ),
+    false,
+  );
+  await page.screenshot({
+    path: "private-data/qa/guided-builder-mobile.png",
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.getByRole("button", { name: "יצירת הצעה והסכם אוטומטית" }).click();
+  await page.getByRole("heading", { name: "ההצעה מוכנה לבדיקה" }).waitFor();
+  await page.getByLabel("תקופה לתצוגה").selectOption("24");
+  const previewFrame = page.frameLocator(
+    'iframe[title="תצוגה מקדימה של ההסכם"]',
+  );
+  await previewFrame.getByText("ההשקעה בפרויקט").waitFor();
+  assert.ok(
+    (await previewFrame.locator("body").innerText()).includes("10,028.40"),
+  );
+  assert.ok(
+    (await previewFrame.locator("body").innerText()).includes(
+      "חיבור למלאי קיים",
+    ),
+  );
+  assert.equal(
+    await previewFrame
+      .locator("body")
+      .evaluate((el) => el.scrollWidth > el.clientWidth),
+    false,
+  );
   await page.screenshot({
     path: "private-data/qa/admin-builder.png",
     fullPage: true,
   });
-  await page
-    .getByRole("button", { name: "פרסום הצעה קפואה ויצירת קישור" })
-    .click();
+  await page.getByRole("button", { name: "אישור ויצירת קישור ללקוח" }).click();
   const linkInput = page.getByLabel("קישור פרטי", { exact: true });
   await linkInput.waitFor();
   const link = await linkInput.inputValue();
@@ -187,7 +201,7 @@ try {
   await customer.getByLabel("קוד חד־פעמי").fill(code);
   await customer.getByRole("button", { name: "אימות וכניסה" }).click();
   await customer
-    .getByRole("heading", { name: "הצעה אישית — בדיקת דפדפן" })
+    .getByRole("heading", { name: "חנויות מסחר אלקטרוני עבור לקוח QA" })
     .waitFor();
   await customer
     .getByLabel("תקופת התחייבות", { exact: true })

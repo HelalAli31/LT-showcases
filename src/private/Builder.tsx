@@ -86,7 +86,14 @@ export default function Builder({
     else setForm({ ...blank, rules: settings.rules });
   }, [offerId, settings.rules]);
   const set = (key: string, value: unknown) => {
-    setForm((v) => ({ ...v, [key]: value }));
+    setForm((v) => ({
+      ...v,
+      [key]: value,
+      // Manual contract wording must not be overwritten by later generation.
+      ...(paragraphLabels[key] && key !== "internalNotes"
+        ? { composition: undefined }
+        : {}),
+    }));
     setPreview(undefined);
   };
   const tierUpdate = (name: string, key: string, value: unknown) => {
@@ -619,6 +626,12 @@ export default function Builder({
             </Field>
           </div>
           {pq && <QuoteCard snapshot={preview} quote={pq} />}
+          <iframe
+            title="תצוגה מקדימה של ההסכם"
+            className="lt-agreement lt-document-preview"
+            src={`/api/admin/offers/${draftId}/preview?tier=${previewTier}&months=${previewMonths}`}
+            key={preview.digest + previewTier + previewMonths}
+          />
           <a
             className="lt-button secondary"
             target="_blank"

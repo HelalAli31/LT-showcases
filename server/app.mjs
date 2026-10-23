@@ -37,6 +37,7 @@ import { providers as providerFactory } from "./lib/providers.mjs";
 import { storage as storageFactory } from "./lib/storage.mjs";
 import { audit, enqueue, processJobs } from "./lib/jobs.mjs";
 import { verificationResponse } from "./lib/meta.mjs";
+import { composeOffer } from "./lib/composer.mjs";
 const asyncRoute = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch(next);
 const cleanOffer = (o) => ({
@@ -249,6 +250,7 @@ export function createApi({
           whatsapp: providers.whatsappReady,
           pdf: !config.VERCEL || !!config.CHROMIUM_PACK_URL,
           binding: config.BINDING_SIGNATURES_ENABLED === "true",
+          publishing: /^[a-f0-9]{64}$/i.test(config.DATA_ENCRYPTION_KEY || ""),
           storage: config.S3_BUCKET ? "private_s3" : "encrypted_mongodb",
         },
       }),
@@ -499,6 +501,18 @@ export function createApi({
     }),
   );
   app.post(
+    "/api/admin/offers/compose",
+    asyncRoute(async (req, res) => {
+      res.json(
+        composeOffer(
+          req.body,
+          await settings(),
+          await db.collection("catalog").find().toArray(),
+        ),
+      );
+    }),
+  );
+  app.post(
     "/api/admin/offers",
     asyncRoute(async (req, res) => {
       const input = offerSchema.parse(req.body);
@@ -602,6 +616,11 @@ export function createApi({
   app.post(
     "/api/admin/offers/:id/publish",
     asyncRoute(async (req, res) => {
+      requireValue(
+        /^[a-f0-9]{64}$/i.test(config.DATA_ENCRYPTION_KEY || ""),
+        "לא ניתן לפרסם: יש להגדיר ב-Vercel את DATA_ENCRYPTION_KEY כמפתח הצפנה בן 64 תווי hex ולפרוס מחדש. אין לשנות מפתח קיים של הסכמים שמורים.",
+        503,
+      );
       const o = await db.collection("offers").findOne({
         _id: req.params.id,
         status: "draft",
@@ -1376,9 +1395,23 @@ export function createApi({
       (error instanceof z.ZodError || error.message?.startsWith("Invalid")
         ? 400
         : 500);
+    const requestId = id();
+    if (status >= 500)
+      console.error(
+        JSON.stringify({
+          event: "api_error",
+          requestId,
+          method: req.method,
+          // Log diagnostic identifiers only; never request bodies or provider secrets.
+          path: req.route?.path || "unknown",
+          name: error.name,
+          code: error.code,
+        }),
+      );
     res.status(status).json({
+      ...(status >= 500 ? { requestId } : {}),
       error:
-        status < 500
+        status < 500 || error instanceof HttpError
           ? error instanceof z.ZodError
             ? "בדקו את השדות הנדרשים ואת הערכים שהוזנו"
             : error.message

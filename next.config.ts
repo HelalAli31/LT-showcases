@@ -7,7 +7,9 @@ const config: NextConfig = {
     "playwright",
     "playwright-core",
   ],
-  outputFileTracingIncludes: { "/api/**/*": ["./public/fonts/**/*"] },
+  outputFileTracingIncludes: {
+    "/api/**/*": ["./public/fonts/**/*", "./public/assets/logo.png"],
+  },
   async headers() {
     return ["/admin/:path*", "/offer/:path*", "/contract-access/:path*"].map(
       (source) => ({

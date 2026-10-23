@@ -30,3 +30,4 @@ private-data/
 !.env.example
 *.tsbuildinfo
 test-results/
+output/pdf/

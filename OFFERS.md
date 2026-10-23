@@ -4,6 +4,12 @@ The project now runs on **Next.js**, with the existing React public landing page
 
 ## Routes
 
+The new-offer screen is a guided composer: enter the customer, service brief and critical requirements, choose tiers/prices, and confirm tax treatment. It automatically fills the scope, delivery stages, deposit/balance terms, support, exclusions, ownership, cancellation and renewal wording on the server. Delivery days, revision rounds and deposit percentage are editable (initially 30 / 3 / 55, based on the supplied reference contract). It uses the current admin catalog, the exact offer prices and authorized discount rules. No model API key is required, and generation never invents an integration or an approval.
+
+Generation saves a draft and shows the actual branded HTML agreement inline. That same renderer produces the signed PDF. Advanced editing and attachments remain available after generation. Manually customized clauses are retained in the detailed editor rather than silently regenerated. Signing mode and exact-version legal approval remain explicit settings; automatically filling a document does not approve its legal text.
+
+Publishing validates the encryption key before changing the draft. A missing/invalid `DATA_ENCRYPTION_KEY` produces an actionable 503 for the authenticated admin, with a request ID; unexpected server failures emit a diagnostic ID in the function logs without request bodies or credentials. Preview generation does not require the key. Deploy the same encryption key for all existing encrypted data.
+
 - `/` — existing public site, unchanged navigation and assets; server-rendered metadata and public page content.
 - `/admin` — password-protected dashboard.
 - `/admin/offers`, `/admin/offers/new`, `/admin/offers/:id` — search, drafts, detailed offer builder, preview, publish, copy link, share-ready WhatsApp text, revoke and duplicate/revise.

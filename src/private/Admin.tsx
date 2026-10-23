@@ -20,7 +20,7 @@ import {
   QuoteCard,
   money,
 } from "./shared";
-import Builder from "./Builder";
+import Builder from "./GuidedBuilder";
 const labels: Record<string, string> = {
   draft: "טיוטה",
   sent: "נשלחה",

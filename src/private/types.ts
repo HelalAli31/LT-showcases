@@ -57,6 +57,12 @@ export interface OfferInput {
   tax: { mode: string; bps: number };
   discountSetup: boolean;
   internalNotes: string;
+  composition?: {
+    specialRequirements: string;
+    deliveryDays: number;
+    revisionRounds: number;
+    depositPercent: number;
+  };
   addons: { label: string; amount: number }[];
   attachments: string[];
 }
@@ -87,6 +93,7 @@ export interface Settings {
     whatsapp: boolean;
     pdf: boolean;
     binding: boolean;
+    publishing?: boolean;
     storage: string;
   };
 }
