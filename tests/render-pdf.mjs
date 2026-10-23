@@ -1,4 +1,27 @@
-﻿import {readFile,writeFile} from 'node:fs/promises';
-import {getDocument} from 'pdfjs-dist/legacy/build/pdf.mjs';
-const pdf=await getDocument({data:new Uint8Array(await readFile('private-data/qa/signed-test.pdf')),standardFontDataUrl:process.cwd().replaceAll('\\','/')+'/node_modules/pdfjs-dist/standard_fonts/'}).promise;
-let allText='';for(let n=1;n<=pdf.numPages;n++){const page=await pdf.getPage(n),viewport=page.getViewport({scale:1.4}),canvas=pdf.canvasFactory.create(viewport.width,viewport.height);await page.render({canvasContext:canvas.context,viewport}).promise;await writeFile(`private-data/qa/pdf-${n}.png`,canvas.canvas.toBuffer('image/png'));const content=await page.getTextContent();allText+=content.items.map(t=>t.str).join('\n')+'\n';page.cleanup();}await writeFile('private-data/qa/pdf-text.txt',allText);console.log('Rendered Hebrew signed test PDF:',pdf.numPages,'pages');for(const amount of ['314.10','10,028.40','837.60'])if(!allText.includes(amount))throw Error('PDF missing '+amount);await pdf.destroy();
+﻿import { readFile, writeFile } from "node:fs/promises";
+import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
+const pdf = await getDocument({
+  data: new Uint8Array(await readFile("private-data/qa/signed-test.pdf")),
+  standardFontDataUrl:
+    process.cwd().replaceAll("\\", "/") +
+    "/node_modules/pdfjs-dist/standard_fonts/",
+}).promise;
+let allText = "";
+for (let n = 1; n <= pdf.numPages; n++) {
+  const page = await pdf.getPage(n),
+    viewport = page.getViewport({ scale: 1.4 }),
+    canvas = pdf.canvasFactory.create(viewport.width, viewport.height);
+  await page.render({ canvasContext: canvas.context, viewport }).promise;
+  await writeFile(
+    `private-data/qa/pdf-${n}.png`,
+    canvas.canvas.toBuffer("image/png"),
+  );
+  const content = await page.getTextContent();
+  allText += content.items.map((t) => t.str).join("\n") + "\n";
+  page.cleanup();
+}
+await writeFile("private-data/qa/pdf-text.txt", allText);
+console.log("Rendered Hebrew signed test PDF:", pdf.numPages, "pages");
+for (const amount of ["314.10", "10,028.40", "837.60"])
+  if (!allText.includes(amount)) throw Error("PDF missing " + amount);
+await pdf.cleanup();

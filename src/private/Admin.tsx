@@ -137,7 +137,7 @@ export default function Admin() {
           ) : section === "contract-templates" ? (
             <Templates />
           ) : section === "contracts" ? (
-            <Contracts key={path[1] || 'list'} contractId={path[1]} />
+            <Contracts key={path[1] || "list"} contractId={path[1]} />
           ) : (
             <Notice>העמוד לא נמצא</Notice>
           )}

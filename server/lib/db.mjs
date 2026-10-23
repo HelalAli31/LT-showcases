@@ -31,6 +31,9 @@ export async function initialize(db) {
       .collection("offers")
       .createIndex({ tokenHash: 1 }, { unique: true, sparse: true }),
     db.collection("offers").createIndex({ createdAt: -1 }),
+    db
+      .collection("templates")
+      .createIndex({ product: 1, tier: 1, version: 1 }, { unique: true }),
     db.collection("contracts").createIndex({ offerId: 1 }, { unique: true }),
     db.collection("jobs").createIndex({ key: 1 }, { unique: true }),
     db.collection("jobs").createIndex({ status: 1, nextAt: 1 }),

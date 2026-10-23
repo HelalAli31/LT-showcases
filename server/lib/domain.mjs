@@ -128,6 +128,10 @@ export function snapshotFrom(input, settings, legal) {
     })),
   };
   snapshot.quotes = base.quotes.map((q) => {
+    requireValue(
+      q.monthly > 0,
+      "כל מסלול חייב לכלול חיוב שירות חודשי חיובי לאחר הנחה",
+    );
     const subtotal = q.subtotal + extra,
       tax =
         snapshot.tax.mode === "exclusive"

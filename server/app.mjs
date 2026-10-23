@@ -212,14 +212,12 @@ export function createApi({
           pdf,
           "attachments/" + attachmentId + ".enc",
         );
-      await db
-        .collection("attachments")
-        .insertOne({
-          _id: attachmentId,
-          label,
-          artifact,
-          createdAt: new Date(),
-        });
+      await db.collection("attachments").insertOne({
+        _id: attachmentId,
+        label,
+        artifact,
+        createdAt: new Date(),
+      });
       await audit(db, "admin", "attachment_added", attachmentId, {
         digest: artifact.digest,
       });
@@ -521,17 +519,15 @@ export function createApi({
     asyncRoute(async (req, res) => {
       const input = offerSchema.parse(req.body);
       await transaction(client, async (session) => {
-        const r = await db
-          .collection("offers")
-          .updateOne(
-            {
-              _id: req.params.id,
-              status: "draft",
-              revokedAt: { $exists: false },
-            },
-            { $set: { input }, $inc: { version: 1 } },
-            { session },
-          );
+        const r = await db.collection("offers").updateOne(
+          {
+            _id: req.params.id,
+            status: "draft",
+            revokedAt: { $exists: false },
+          },
+          { $set: { input }, $inc: { version: 1 } },
+          { session },
+        );
         requireValue(r.modifiedCount, "אפשר לערוך טיוטות בלבד", 409);
         await audit(db, "admin", "draft_updated", req.params.id, {}, session);
       });
@@ -591,13 +587,11 @@ export function createApi({
   app.post(
     "/api/admin/offers/:id/publish",
     asyncRoute(async (req, res) => {
-      const o = await db
-        .collection("offers")
-        .findOne({
-          _id: req.params.id,
-          status: "draft",
-          revokedAt: { $exists: false },
-        });
+      const o = await db.collection("offers").findOne({
+        _id: req.params.id,
+        status: "draft",
+        revokedAt: { $exists: false },
+      });
       requireValue(o, "ההצעה אינה טיוטה", 409);
       const snapshot = await build(o),
         t = token();
@@ -628,19 +622,17 @@ export function createApi({
           { session },
         );
         requireValue(r.modifiedCount, "הטיוטה השתנתה. נסו שוב.", 409);
-        await db
-          .collection("clients")
-          .updateOne(
-            { _id: hash(o.input.recipientEmail) },
-            {
-              $set: {
-                email: o.input.recipientEmail,
-                label: o.input.clientLabel,
-                updatedAt: new Date(),
-              },
+        await db.collection("clients").updateOne(
+          { _id: hash(o.input.recipientEmail) },
+          {
+            $set: {
+              email: o.input.recipientEmail,
+              label: o.input.clientLabel,
+              updatedAt: new Date(),
             },
-            { upsert: true, session },
-          );
+          },
+          { upsert: true, session },
+        );
         await audit(
           db,
           "admin",
@@ -1340,24 +1332,22 @@ export function createApi({
                 : event.status === "delivered"
                   ? ["accepted", "sent"]
                   : ["accepted", "sent"];
-            await db
-              .collection("jobs")
-              .updateOne(
-                {
-                  providerId: event.id,
-                  channel: "whatsapp",
-                  status: { $in: allowed },
+            await db.collection("jobs").updateOne(
+              {
+                providerId: event.id,
+                channel: "whatsapp",
+                status: { $in: allowed },
+              },
+              {
+                $set: {
+                  status: event.status,
+                  deliveryAt: new Date(Number(event.timestamp) * 1000),
+                  ...(event.status === "failed"
+                    ? { lastError: "provider_delivery_failed" }
+                    : {}),
                 },
-                {
-                  $set: {
-                    status: event.status,
-                    deliveryAt: new Date(Number(event.timestamp) * 1000),
-                    ...(event.status === "failed"
-                      ? { lastError: "provider_delivery_failed" }
-                      : {}),
-                  },
-                },
-              );
+              },
+            );
           }
       res.json({ ok: true });
     }),
@@ -1365,6 +1355,10 @@ export function createApi({
   app.use((req, res) => res.status(404).json({ error: "הנתיב אינו קיים" }));
   app.use((error, req, res, next) => {
     if (res.headersSent) return next(error);
+    if (error.code === 11000)
+      return res
+        .status(409)
+        .json({ error: "הנתונים השתנו במקביל. רעננו ונסו שוב." });
     const status =
       error.status ||
       (error instanceof z.ZodError || error.message?.startsWith("Invalid")
