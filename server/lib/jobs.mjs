@@ -1,4 +1,5 @@
 ﻿import { id, digest } from "./security.mjs";
+import { whatsappConfigured } from "./meta.mjs";
 export async function audit(db, actor, action, subject, detail = {}, session) {
   const record = { _id: id(), actor, action, subject, detail, at: new Date() };
   record.digest = digest(record);
@@ -14,14 +15,7 @@ export async function enqueue(db, contract, settings, config, session) {
     const configured =
       job.channel === "email"
         ? !!(config.MAIL_USER && config.MAIL_PASS && job.recipient)
-        : !!(
-            config.META_TOKEN &&
-            config.META_PHONE_NUMBER_ID &&
-            config.META_TEMPLATE_NAME &&
-            config.META_TEMPLATE_LANGUAGE &&
-            config.META_SEND_ENABLED === "true" &&
-            settings.whatsappConsent
-          );
+        : whatsappConfigured(config) && settings.whatsappConsent;
     await db.collection("jobs").insertOne(
       {
         _id: id(),

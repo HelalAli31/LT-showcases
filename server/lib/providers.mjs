@@ -1,6 +1,7 @@
 ﻿import nodemailer from "nodemailer";
 import { HttpError } from "./security.mjs";
-export function providers(config) {
+import { whatsappConfigured, whatsappToken } from "./meta.mjs";
+export function providers(config, request = fetch) {
   const mailReady = !!(config.MAIL_USER && config.MAIL_PASS);
   const smtp = mailReady
     ? nodemailer.createTransport({
@@ -14,13 +15,7 @@ export function providers(config) {
     : null;
   return {
     mailReady,
-    whatsappReady: !!(
-      config.META_SEND_ENABLED === "true" &&
-      config.META_TOKEN &&
-      config.META_PHONE_NUMBER_ID &&
-      config.META_TEMPLATE_NAME &&
-      config.META_TEMPLATE_LANGUAGE
-    ),
+    whatsappReady: whatsappConfigured(config),
     async email({ to, subject, text, messageId }) {
       if (!smtp) throw new HttpError(503, "שירות הדוא״ל אינו מוגדר");
       const result = await smtp.sendMail({
@@ -37,18 +32,18 @@ export function providers(config) {
     async whatsapp({ to, contractId }) {
       if (!this.whatsappReady)
         throw new HttpError(503, "WhatsApp not configured");
-      const version = config.META_GRAPH_VERSION || "v23.0";
+      const version = config.META_GRAPH_VERSION || "v25.0";
       if (
         !/^v\d+\.\d+$/.test(version) ||
         !/^\d+$/.test(config.META_PHONE_NUMBER_ID)
       )
         throw Error("Invalid Meta configuration");
-      const response = await fetch(
+      const response = await request(
         `https://graph.facebook.com/${version}/${config.META_PHONE_NUMBER_ID}/messages`,
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${config.META_TOKEN}`,
+            Authorization: `Bearer ${whatsappToken(config)}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({

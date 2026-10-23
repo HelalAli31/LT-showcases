@@ -36,6 +36,7 @@ import { renderAgreement, pdfFromHtml } from "./lib/documents.mjs";
 import { providers as providerFactory } from "./lib/providers.mjs";
 import { storage as storageFactory } from "./lib/storage.mjs";
 import { audit, enqueue, processJobs } from "./lib/jobs.mjs";
+import { verificationResponse } from "./lib/meta.mjs";
 const asyncRoute = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch(next);
 const cleanOffer = (o) => ({
@@ -1307,13 +1308,8 @@ export function createApi({
     }),
   );
   app.get("/api/webhooks/whatsapp", (req, res) => {
-    if (
-      config.META_WEBHOOK_VERIFY_TOKEN &&
-      req.query["hub.mode"] === "subscribe" &&
-      req.query["hub.verify_token"] === config.META_WEBHOOK_VERIFY_TOKEN
-    )
-      return res.type("text").send(String(req.query["hub.challenge"] || ""));
-    res.sendStatus(403);
+    const result = verificationResponse(req.query, config);
+    res.status(result.status).type("text").send(result.body);
   });
   app.post(
     "/api/webhooks/whatsapp",

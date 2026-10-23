@@ -35,7 +35,11 @@ Create a Meta-approved utility template with one body parameter for the opaque c
 
 Set the newly issued token, phone-number ID, supported Graph API version, exact approved template name and language. `META_SEND_ENABLED=true` explicitly enables outbound sends; the admin recipient must separately consent in settings. Test-mode signatures never send WhatsApp. Missing/disabled configuration is recorded as `not_configured`, not successful delivery.
 
+Use `META_WHATSAPP_ACCESS_TOKEN` (or the existing `META_TOKEN`) for a token authorized for WhatsApp messaging. `META_PAGE_ACCESS_TOKEN` and `META_PAGE_ID` are not automatically used as WhatsApp credentials. Set `META_GRAPH_VERSION=v25.0` for this setup. The app ID is not needed for sending these WhatsApp template messages.
+
 Configure Meta's callback as `https://www.luxurytech.org/api/webhooks/whatsapp`, with a new random verify token and the Meta app secret. Subscribe to message status events. POST signatures are verified over the raw request body before processing. Statuses distinguish provider acceptance, sent, delivered, read and failure. Email status means SMTP acceptance, not verified inbox delivery.
+
+The callback accepts `META_VERIFY_TOKEN`, with `META_WEBHOOK_VERIFY_TOKEN` retained as a fallback. If both are set, `META_VERIFY_TOKEN` takes precedence. The GET handshake works without a database connection; signed delivery events still require MongoDB. Save real credentials only in Vercel's server environment variables. Editing `.env.example` does not configure a deployed Vercel Function.
 
 ## Creating and sending an offer
 
