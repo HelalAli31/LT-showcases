@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/public-router";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { services } from "@/data/services";
 import { ArrowLeft, ArrowRight } from "lucide-react";

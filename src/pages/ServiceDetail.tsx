@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link } from "@/lib/public-router";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { PageBanner } from "@/components/PageBanner";
 import { getServiceBySlug } from "@/data/services";

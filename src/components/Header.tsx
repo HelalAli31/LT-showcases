@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import logo from "@/assets/logo.png";
+import { Link, NavLink, useNavigate } from "@/lib/public-router";
+const logo = "/assets/logo.png";
 import { services } from "@/data/services";
 
 export const Header = () => {
@@ -30,7 +30,11 @@ export const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
       <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-3 group" onClick={closeMobile}>
+        <Link
+          to="/"
+          className="flex items-center gap-3 group"
+          onClick={closeMobile}
+        >
           <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center border border-accent/20 group-hover:border-accent/40 transition-colors overflow-hidden">
             <img
               src={logo}
@@ -59,13 +63,22 @@ export const Header = () => {
               {t("nav.services")}
               <ChevronDown size={14} />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="bg-popover border-border min-w-[220px]">
+            <DropdownMenuContent
+              align="center"
+              className="bg-popover border-border min-w-[220px]"
+            >
               <DropdownMenuItem asChild className="cursor-pointer font-medium">
                 <Link to="/services">{t("services.pageTitle")}</Link>
               </DropdownMenuItem>
               {services.map((service) => (
-                <DropdownMenuItem key={service.slug} asChild className="cursor-pointer">
-                  <Link to={`/services/${service.slug}`}>{service.title[language]}</Link>
+                <DropdownMenuItem
+                  key={service.slug}
+                  asChild
+                  className="cursor-pointer"
+                >
+                  <Link to={`/services/${service.slug}`}>
+                    {service.title[language]}
+                  </Link>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -138,7 +151,11 @@ export const Header = () => {
       {mobileMenuOpen && (
         <div className="md:hidden bg-card border-t border-border max-h-[80vh] overflow-y-auto">
           <div className="container mx-auto px-4 py-6 flex flex-col gap-4">
-            <Link to="/" onClick={closeMobile} className="text-foreground hover:text-accent transition-colors text-start">
+            <Link
+              to="/"
+              onClick={closeMobile}
+              className="text-foreground hover:text-accent transition-colors text-start"
+            >
               {t("nav.home")}
             </Link>
 
@@ -155,7 +172,11 @@ export const Header = () => {
               </button>
               {mobileServicesOpen && (
                 <div className="mt-3 ms-4 flex flex-col gap-3 border-s border-border ps-4">
-                  <Link to="/services" onClick={closeMobile} className="text-sm font-medium text-accent">
+                  <Link
+                    to="/services"
+                    onClick={closeMobile}
+                    className="text-sm font-medium text-accent"
+                  >
                     {t("services.pageTitle")}
                   </Link>
                   {services.map((service) => (
@@ -172,16 +193,32 @@ export const Header = () => {
               )}
             </div>
 
-            <Link to="/portfolio" onClick={closeMobile} className="text-foreground hover:text-accent transition-colors text-start">
+            <Link
+              to="/portfolio"
+              onClick={closeMobile}
+              className="text-foreground hover:text-accent transition-colors text-start"
+            >
               {t("nav.portfolio")}
             </Link>
-            <Link to="/blog" onClick={closeMobile} className="text-foreground hover:text-accent transition-colors text-start">
+            <Link
+              to="/blog"
+              onClick={closeMobile}
+              className="text-foreground hover:text-accent transition-colors text-start"
+            >
               {t("nav.blog")}
             </Link>
-            <Link to="/about" onClick={closeMobile} className="text-foreground hover:text-accent transition-colors text-start">
+            <Link
+              to="/about"
+              onClick={closeMobile}
+              className="text-foreground hover:text-accent transition-colors text-start"
+            >
               {t("nav.about")}
             </Link>
-            <Link to="/contact" onClick={closeMobile} className="text-foreground hover:text-accent transition-colors text-start">
+            <Link
+              to="/contact"
+              onClick={closeMobile}
+              className="text-foreground hover:text-accent transition-colors text-start"
+            >
               {t("nav.contact")}
             </Link>
             <a

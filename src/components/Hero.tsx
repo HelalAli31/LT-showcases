@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/public-router";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
-import heroImage from "@/assets/hero-bg.jpg";
-import logo from "@/assets/logo.png";
+const heroImage = "/assets/hero-bg.jpg";
+const logo = "/assets/logo.png";
 
 export const Hero = () => {
   const { t } = useLanguage();
@@ -38,14 +38,14 @@ export const Hero = () => {
   // Floating particles
   const particles = useMemo(
     () =>
-      Array.from({ length: 14 }).map(() => ({
-        left: `${Math.random() * 100}%`,
-        size: 4 + Math.random() * 6,
-        delay: `${Math.random() * 6}s`,
-        duration: `${6 + Math.random() * 8}s`,
-        opacity: 0.15 + Math.random() * 0.25,
+      Array.from({ length: 14 }).map((_, i) => ({
+        left: `${(i * 37 + 13) % 100}%`,
+        size: 4 + ((i * 7) % 6),
+        delay: `${(i * 1.7) % 6}s`,
+        duration: `${6 + ((i * 3) % 8)}s`,
+        opacity: 0.15 + (i % 5) * 0.05,
       })),
-    []
+    [],
   );
 
   const scrollToContact = () => navigate("/contact");

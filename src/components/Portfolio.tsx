@@ -4,7 +4,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Play } from "lucide-react";
-import helalImg from "@/assets/hero-BujqUG72.jpg";
+const helalImg = "/assets/hero-BujqUG72.jpg";
 import type { ServiceSlug } from "@/data/services";
 
 type ProjectCategory = "all" | ServiceSlug;
@@ -504,21 +504,22 @@ export const Portfolio = ({
                       {selectedProject.title[language]}
                     </h3>
 
-                    {selectedProject.siteUrl && selectedProject.siteUrl !== "#" && (
-                      <Button
-                        variant="outline"
-                        className="gap-2"
-                        onClick={(e) =>
-                          onVisitClick(
-                            e as unknown as MouseEvent,
-                            selectedProject.siteUrl,
-                          )
-                        }
-                      >
-                        <ExternalLink size={16} />
-                        {language === "he" ? "לביקור באתר" : "Visit Site"}
-                      </Button>
-                    )}
+                    {selectedProject.siteUrl &&
+                      selectedProject.siteUrl !== "#" && (
+                        <Button
+                          variant="outline"
+                          className="gap-2"
+                          onClick={(e) =>
+                            onVisitClick(
+                              e as unknown as MouseEvent,
+                              selectedProject.siteUrl,
+                            )
+                          }
+                        >
+                          <ExternalLink size={16} />
+                          {language === "he" ? "לביקור באתר" : "Visit Site"}
+                        </Button>
+                      )}
                   </div>
 
                   {selectedProject.isConcept && (

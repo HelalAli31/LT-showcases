@@ -1,6 +1,6 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/lib/public-router';
 
 export const Footer = () => {
   const { language, toggleLanguage, t } = useLanguage();
