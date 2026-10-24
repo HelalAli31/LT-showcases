@@ -301,8 +301,7 @@
   align-items: start;
 }
 .lt-quote {
-  position: sticky;
-  top: 20px;
+  position: static;
   border-color: #6b5638;
 }
 .lt-price {
@@ -830,4 +829,60 @@
   .lt-commitment-option .lt-commitment-discount {
     justify-self: start;
   }
+}
+
+.lt-offer-selection {
+  margin-bottom: 28px;
+}
+.lt-offer-selection > .lt-commitment {
+  margin-top: 24px;
+}
+.lt-offer-selection .lt-tier-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+.lt-private .lt-offer-selection .lt-tier {
+  justify-content: flex-start;
+  align-items: stretch;
+  margin: 0;
+  text-align: right;
+  position: static;
+}
+.lt-tier-choice-state {
+  font-size: 12px;
+  display: block;
+}
+.lt-offer-selection .lt-tier h2 {
+  margin: 8px 0 14px;
+}
+.lt-tier-base-price {
+  font-size: 11px;
+  color: #bcb5a9;
+  font-weight: 400;
+}
+.lt-tier-base-price strong {
+  font-size: 25px;
+  color: #f0d4a6;
+  font-weight: 650;
+}
+.lt-offer-selection .lt-tier p {
+  font-size: 12px;
+  font-weight: 400;
+}
+.lt-admin-preview {
+  display: flow-root;
+}
+.lt-admin-preview > .lt-quote {
+  position: static;
+  margin-bottom: 24px;
+}
+.lt-admin-preview > .lt-agreement {
+  margin-bottom: 24px;
+}
+.lt-admin-preview > .lt-button,
+.lt-admin-preview > button {
+  margin-top: 16px;
+}
+.lt-offer-selection .lt-tier:focus-visible {
+  outline: 2px solid #e4c38e;
+  outline-offset: 3px;
 }

@@ -1,3 +1,4 @@
+import OfferSelection from "./OfferSelection";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import type {
@@ -574,7 +575,10 @@ export default function GuidedBuilder({
         </fieldset>
       </form>
       {preview && (
-        <section id="offer-review" className="lt-card lt-review">
+        <section
+          id="offer-review"
+          className="lt-card lt-review lt-admin-preview"
+        >
           <div className="lt-section-heading">
             <span className="lt-step-number">03</span>
             <div>
@@ -584,40 +588,12 @@ export default function GuidedBuilder({
               </p>
             </div>
           </div>
-          <div className="lt-form-grid">
-            <Field label="מסלול לתצוגה">
-              <select
-                value={selection.tier}
-                onChange={(e) =>
-                  setSelection({
-                    tier: e.target.value,
-                    months: preview.tiers.find((t) => t.name === e.target.value)
-                      .rules[0].months,
-                  })
-                }
-              >
-                {preview.tiers.map((t) => (
-                  <option key={t.name}>{t.name}</option>
-                ))}
-              </select>
-            </Field>
-            <Field label="תקופה לתצוגה">
-              <select
-                value={selection.months}
-                onChange={(e) =>
-                  setSelection({ ...selection, months: Number(e.target.value) })
-                }
-              >
-                {preview.tiers
-                  .find((t) => t.name === selection.tier)
-                  ?.rules.map((r) => (
-                    <option key={r.months} value={r.months}>
-                      {r.months} חודשים
-                    </option>
-                  ))}
-              </select>
-            </Field>
-          </div>
+          <OfferSelection
+            snapshot={preview}
+            tier={selection.tier}
+            months={selection.months}
+            onChange={setSelection}
+          />
           {quote && <QuoteCard snapshot={preview} quote={quote} />}
           <div className="lt-document-toolbar">
             <strong>תצוגת ההסכם המלא</strong>

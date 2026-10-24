@@ -4,7 +4,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { SMTPServer } from "smtp-server";
 import { chromium } from "playwright";
 import { PDFDocument } from "pdf-lib";
-import { setup } from "./helpers/fixture.mjs";
+import { setup, post, input } from "./helpers/fixture.mjs";
 const f = await setup();
 const mailbox = [];
 const smtp = new SMTPServer({
@@ -138,6 +138,19 @@ try {
     .fill("חיבור למלאי קיים לאחר קבלת גישת API");
   await page.getByLabel("דמי הקמה PRO ₪").fill("2490.00");
   await page.getByLabel("מחיר חודשי PRO ₪").fill("349.00");
+  for (const tier of ["STARTER", "CUSTOM"]) {
+    await page
+      .locator(".lt-tier-editor")
+      .filter({ has: page.getByText(tier, { exact: true }) })
+      .getByRole("checkbox")
+      .first()
+      .check();
+  }
+  await page
+    .getByRole("checkbox", {
+      name: "אישרתי את המחיר ואת היקף CUSTOM עבור לקוח זה",
+    })
+    .check();
   await page.getByLabel("טיפול במס", { exact: true }).selectOption("inclusive");
   await page.getByLabel("שיעור מס %", { exact: true }).fill("18");
   await page.screenshot({
@@ -158,7 +171,26 @@ try {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.getByRole("button", { name: "יצירת הצעה והסכם אוטומטית" }).click();
   await page.getByRole("heading", { name: "ההצעה מוכנה לבדיקה" }).waitFor();
-  await page.getByLabel("תקופה לתצוגה").selectOption("24");
+  for (const tier of ["STARTER", "PRO", "CUSTOM"]) {
+    assert.equal(
+      await page
+        .getByRole("button", { name: `בחירת מסלול ${tier}`, exact: true })
+        .count(),
+      1,
+    );
+  }
+  await page
+    .getByRole("button", { name: "בחירת מסלול STARTER", exact: true })
+    .click();
+  await page.getByRole("radio", { name: "24 חודשים", exact: true }).check();
+  assert.ok((await page.locator(".lt-quote").innerText()).includes("4,208.40"));
+  await page
+    .getByRole("button", { name: "בחירת מסלול CUSTOM", exact: true })
+    .click();
+  assert.ok((await page.locator(".lt-price").innerText()).includes("359.10"));
+  await page
+    .getByRole("button", { name: "בחירת מסלול PRO", exact: true })
+    .click();
   const previewFrame = page.frameLocator(
     'iframe[title="תצוגה מקדימה של ההסכם"]',
   );
@@ -205,6 +237,30 @@ try {
     "Opening a private offer must not send an OTP",
   );
   assert.equal(await customer.getByRole("radio").count(), 3);
+  for (const tier of ["STARTER", "PRO", "CUSTOM"]) {
+    assert.equal(
+      await customer
+        .getByRole("button", { name: `בחירת מסלול ${tier}`, exact: true })
+        .count(),
+      1,
+    );
+  }
+  await customer
+    .getByRole("button", { name: "בחירת מסלול STARTER", exact: true })
+    .click();
+  await customer.getByRole("radio", { name: "24 חודשים", exact: true }).check();
+  assert.ok(
+    (await customer.locator(".lt-quote").innerText()).includes("4,208.40"),
+  );
+  await customer
+    .getByRole("button", { name: "בחירת מסלול CUSTOM", exact: true })
+    .click();
+  assert.ok(
+    (await customer.locator(".lt-price").innerText()).includes("359.10"),
+  );
+  await customer
+    .getByRole("button", { name: "בחירת מסלול PRO", exact: true })
+    .click();
   await customer.getByRole("radio", { name: "24 חודשים", exact: true }).check();
   assert.ok(
     (await customer.locator(".lt-quote").innerText()).includes("10,028.40"),
@@ -274,6 +330,36 @@ try {
   await page.getByRole("heading", { name: "התראות", exact: true }).waitFor();
   await page.screenshot({
     path: "private-data/qa/admin-contract.png",
+    fullPage: true,
+  });
+  const legacy = await post(f.admin, "admin/offers", input());
+  assert.equal(legacy.status, 201);
+  await page.goto(origin + "/admin/offers/" + legacy.body._id);
+  await page.getByRole("button", { name: "שמירת טיוטה ותצוגה מקדימה" }).click();
+  const publishButton = page.getByRole("button", {
+    name: "פרסום הצעה קפואה ויצירת קישור",
+  });
+  await publishButton.waitFor();
+  await publishButton.scrollIntoViewIfNeeded();
+  const footer = await publishButton.boundingBox();
+  const quoteBounds = await page.locator(".lt-quote").boundingBox();
+  assert.ok(
+    footer.y >= quoteBounds.y + quoteBounds.height,
+    "Publish actions overlap the quote",
+  );
+  const center = {
+    x: footer.x + footer.width / 2,
+    y: footer.y + footer.height / 2,
+  };
+  assert.ok(
+    await publishButton.evaluate(
+      (el, point) => el.contains(document.elementFromPoint(point.x, point.y)),
+      center,
+    ),
+    "Publish button is covered by another element",
+  );
+  await page.screenshot({
+    path: "private-data/qa/advanced-preview-actions.png",
     fullPage: true,
   });
   assert.deepEqual(errors, [], "Browser JavaScript errors");

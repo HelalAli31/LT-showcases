@@ -1,3 +1,4 @@
+import OfferSelection from "./OfferSelection";
 import type { Settings, OfferInput, Product, Offer, Snapshot } from "./types";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -79,7 +80,15 @@ export default function Builder({
       api("admin/offers/" + offerId)
         .then((d) => {
           setDoc(d);
-          setForm({ ...d.input, attachments: d.input.attachments || [] });
+          setForm({
+            ...d.input,
+            rules: d.input.rules || settings.rules,
+            tiers: d.input.tiers.map((t) => ({
+              ...t,
+              rules: t.rules || d.input.rules || settings.rules,
+            })),
+            attachments: d.input.attachments || [],
+          });
           setLink(d.url ? location.origin + d.url : "");
         })
         .catch((e) => setError(e.message));
@@ -591,40 +600,17 @@ export default function Builder({
         </button>
       </form>
       {preview && (
-        <section className="lt-card">
+        <section className="lt-card lt-admin-preview">
           <h2>תצוגה מקדימה לפני פרסום</h2>
-          <div className="lt-form-grid">
-            <Field label="מסלול">
-              <select
-                value={previewTier}
-                onChange={(e) => {
-                  setPreviewTier(e.target.value);
-                  setPreviewMonths(
-                    preview.tiers.find((t) => t.name === e.target.value)
-                      .rules[0].months,
-                  );
-                }}
-              >
-                {preview.tiers.map((t) => (
-                  <option key={t.name}>{t.name}</option>
-                ))}
-              </select>
-            </Field>
-            <Field label="חודשים">
-              <select
-                value={previewMonths}
-                onChange={(e) => setPreviewMonths(Number(e.target.value))}
-              >
-                {preview.tiers
-                  .find((t) => t.name === previewTier)
-                  .rules.map((r) => (
-                    <option value={r.months} key={r.months}>
-                      {r.months}
-                    </option>
-                  ))}
-              </select>
-            </Field>
-          </div>
+          <OfferSelection
+            snapshot={preview}
+            tier={previewTier}
+            months={previewMonths}
+            onChange={(v) => {
+              setPreviewTier(v.tier);
+              setPreviewMonths(v.months);
+            }}
+          />
           {pq && <QuoteCard snapshot={preview} quote={pq} />}
           <iframe
             title="תצוגה מקדימה של ההסכם"
