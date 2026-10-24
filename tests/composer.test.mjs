@@ -66,9 +66,17 @@ test("generated offer can publish, show designed preview and sign with frozen au
   assert.equal(composed.status, 200, JSON.stringify(composed.body));
   const offer = await publish(f, composed.body);
   const html = await f.admin.get(
-    `/api/admin/offers/${offer.id}/preview?tier=PRO&months=24`,
+    `/api/admin/offers/${offer.id}/preview?format=agreement&tier=PRO&months=24`,
   );
   assert.equal(html.status, 200);
+  const interactive = await f.admin.get(
+    `/api/admin/offers/${offer.id}/preview?tier=PRO&months=24`,
+  );
+  assert.equal(interactive.status, 302);
+  assert.equal(
+    interactive.headers.location,
+    `/admin/offers/${offer.id}/preview?tier=PRO&months=24`,
+  );
   assert.ok(html.text.includes("10,028.40"));
   assert.ok(html.text.includes("ההשקעה בפרויקט"));
   assert.ok(html.text.includes(brief().specialRequirements));

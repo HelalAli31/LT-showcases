@@ -597,14 +597,18 @@ export default function GuidedBuilder({
           {quote && <QuoteCard snapshot={preview} quote={quote} />}
           <div className="lt-document-toolbar">
             <strong>תצוגת ההסכם המלא</strong>
-            <a target="_blank" rel="noreferrer" href={previewUrl}>
-              פתיחה בחלון חדש ↗
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href={`/admin/offers/${draftId}/preview?tier=${selection.tier}&months=${selection.months}`}
+            >
+              תצוגת לקוח אינטראקטיבית ↗
             </a>
           </div>
           <iframe
             title="תצוגה מקדימה של ההסכם"
             className="lt-agreement lt-document-preview"
-            src={previewUrl}
+            src={previewUrl + "&format=agreement"}
             key={preview.digest + selection.tier + selection.months}
           />
           <div className="lt-builder-submit">

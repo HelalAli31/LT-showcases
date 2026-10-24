@@ -21,6 +21,7 @@ import {
   money,
 } from "./shared";
 import Builder from "./GuidedBuilder";
+import OfferPreview from "./OfferPreview";
 const labels: Record<string, string> = {
   draft: "טיוטה",
   sent: "נשלחה",
@@ -132,7 +133,9 @@ export default function Admin() {
           {section === "dashboard" ? (
             <Dashboard />
           ) : section === "offers" ? (
-            path[1] && path[1] !== "list" ? (
+            path[1] && path[2] === "preview" ? (
+              <OfferPreview offerId={path[1]} />
+            ) : path[1] && path[1] !== "list" ? (
               <Builder
                 offerId={path[1] === "new" ? undefined : path[1]}
                 settings={settings}

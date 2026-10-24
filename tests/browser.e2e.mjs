@@ -191,6 +191,58 @@ try {
   await page
     .getByRole("button", { name: "בחירת מסלול PRO", exact: true })
     .click();
+  const draftForPreview = await f.db
+    .collection("offers")
+    .findOne({ "input.clientLabel": "לקוח QA" });
+  const interactivePreview = await ctx.newPage();
+  interactivePreview.on("pageerror", (e) => errors.push(e.message));
+  await interactivePreview.goto(
+    `${origin}/api/admin/offers/${draftForPreview._id}/preview?tier=PRO&months=12`,
+  );
+  await interactivePreview
+    .getByRole("button", { name: "בחירת מסלול STARTER", exact: true })
+    .waitFor();
+  assert.ok(
+    interactivePreview
+      .url()
+      .includes(`/admin/offers/${draftForPreview._id}/preview`),
+  );
+  await interactivePreview
+    .getByRole("button", { name: "בחירת מסלול STARTER", exact: true })
+    .click();
+  await interactivePreview
+    .getByRole("radio", { name: "24 חודשים", exact: true })
+    .check();
+  assert.ok(
+    (await interactivePreview.locator(".lt-quote").innerText()).includes(
+      "4,208.40",
+    ),
+  );
+  await interactivePreview
+    .frameLocator("iframe")
+    .getByText("ההשקעה בפרויקט")
+    .waitFor();
+  assert.ok(
+    (
+      await interactivePreview
+        .frameLocator("iframe")
+        .locator("body")
+        .innerText()
+    ).includes("STARTER"),
+  );
+  await interactivePreview
+    .getByRole("button", { name: "בחירת מסלול CUSTOM", exact: true })
+    .click();
+  assert.ok(
+    (await interactivePreview.locator(".lt-price").innerText()).includes(
+      "359.10",
+    ),
+  );
+  await interactivePreview.screenshot({
+    path: "private-data/qa/interactive-customer-preview.png",
+    fullPage: true,
+  });
+  await interactivePreview.close();
   const previewFrame = page.frameLocator(
     'iframe[title="תצוגה מקדימה של ההסכם"]',
   );
@@ -214,7 +266,9 @@ try {
     fullPage: true,
   });
   await page.getByRole("button", { name: "אישור ויצירת קישור ללקוח" }).click();
-  const linkInput = page.getByLabel("קישור פרטי", { exact: true });
+  const linkInput = page.getByLabel("קישור ללקוח — בחירת מסלול וחתימה", {
+    exact: true,
+  });
   await linkInput.waitFor();
   const link = await linkInput.inputValue();
   assert.ok(link.includes("/offer/"));

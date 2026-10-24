@@ -158,7 +158,7 @@ export default function Builder({
           <p>מצב: {doc.state}</p>
           {link && (
             <>
-              <Field label="קישור פרטי">
+              <Field label="קישור ללקוח — בחירת מסלול וחתימה">
                 <input readOnly value={link} dir="ltr" />
               </Field>
               <button
@@ -615,16 +615,16 @@ export default function Builder({
           <iframe
             title="תצוגה מקדימה של ההסכם"
             className="lt-agreement lt-document-preview"
-            src={`/api/admin/offers/${draftId}/preview?tier=${previewTier}&months=${previewMonths}`}
+            src={`/api/admin/offers/${draftId}/preview?format=agreement&tier=${previewTier}&months=${previewMonths}`}
             key={preview.digest + previewTier + previewMonths}
           />
           <a
             className="lt-button secondary"
             target="_blank"
             rel="noreferrer"
-            href={`/api/admin/offers/${draftId}/preview?tier=${previewTier}&months=${previewMonths}`}
+            href={`/admin/offers/${draftId}/preview?tier=${previewTier}&months=${previewMonths}`}
           >
-            עיון בהסכם המלא
+            פתיחת תצוגת לקוח אינטראקטיבית
           </a>
           <button
             disabled={busy}

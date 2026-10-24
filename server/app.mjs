@@ -687,6 +687,11 @@ export function createApi({
       const s = o.snapshot || (await build(o));
       if (req.query.tier) {
         const q = selected(s, req.query.tier, req.query.months);
+        if (req.query.format !== "agreement")
+          return res.redirect(
+            302,
+            `/admin/offers/${encodeURIComponent(o._id)}/preview?tier=${encodeURIComponent(q.tier)}&months=${q.months}`,
+          );
         res
           .type("html")
           .set(
