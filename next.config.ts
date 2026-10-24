@@ -12,6 +12,7 @@ const config: NextConfig = {
       "./public/fonts/**/*",
       "./public/assets/logo.png",
       "./node_modules/@sparticuz/chromium/bin/**/*",
+      "./node_modules/playwright-core/**/*",
     ],
   },
   async headers() {
