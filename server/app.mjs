@@ -346,14 +346,28 @@ export function createApi({
       await limit(req, "pdf-diagnostic", 3, 300000);
       req.operationStage = "pdf_diagnostic";
       const started = Date.now();
-      const pdf = await makePdf(
-        "<!doctype html><html><body><h1>Luxury Tech PDF readiness</h1></body></html>",
-      );
-      res.json({
-        ready: true,
-        bytes: pdf.length,
-        elapsedMs: Date.now() - started,
-      });
+      try {
+        const pdf = await makePdf(
+          "<!doctype html><html><body><h1>Luxury Tech PDF readiness</h1></body></html>",
+        );
+        res.json({
+          ready: true,
+          bytes: pdf.length,
+          elapsedMs: Date.now() - started,
+        });
+      } catch (error) {
+        // Fixed synthetic HTML only; this admin-only endpoint never renders customer input.
+        res
+          .status(503)
+          .json({
+            ready: false,
+            code: error.code,
+            runtimeError: String(error.cause?.message || error.message).slice(
+              0,
+              2500,
+            ),
+          });
+      }
     }),
   );
   app.get(
