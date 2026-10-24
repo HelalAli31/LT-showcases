@@ -730,3 +730,101 @@
     font-size: 11px;
   }
 }
+
+.lt-commitment {
+  border: 0;
+  margin: 0 0 28px;
+  padding: 0;
+  min-width: 0;
+}
+.lt-commitment legend {
+  font-size: 20px;
+  font-weight: 600;
+}
+.lt-commitment-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.lt-commitment-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  border: 1px solid #414047;
+  background: #17171c;
+  padding: 18px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  min-width: 0;
+}
+.lt-commitment-option.selected {
+  background: #2a2217;
+  border-color: #dab579;
+  box-shadow: 0 0 0 1px #dab579;
+}
+.lt-commitment-option input {
+  position: absolute;
+  inset-inline-end: 12px;
+  top: 12px;
+  width: 16px;
+  height: 16px;
+  accent-color: #d5af73;
+}
+.lt-commitment-option strong {
+  padding-inline-end: 20px;
+  font-size: 17px;
+}
+.lt-commitment-option .lt-commitment-discount {
+  align-self: flex-start;
+  color: #e4c38e;
+  background: #ffffff08;
+  border-radius: 4px;
+  padding: 3px 7px;
+  font-size: 11px;
+}
+.lt-commitment-option b {
+  font-size: 22px;
+  color: #f2d7ac;
+}
+.lt-commitment-option small {
+  font-size: 11px;
+  font-weight: 400;
+  color: #bfb6aa;
+}
+.lt-commitment-option > span:not(.lt-commitment-discount) {
+  font-size: 10px;
+  color: #bdb5aa;
+}
+.lt-commitment-option del {
+  font-size: 11px;
+  color: #99918a;
+}
+.lt-commitment-option:focus-within {
+  outline: 2px solid #e4c38e;
+  outline-offset: 3px;
+}
+@media (max-width: 760px) {
+  .lt-commitment-options {
+    grid-template-columns: 1fr;
+  }
+  .lt-commitment-option {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 16px;
+    gap: 8px 14px;
+  }
+  .lt-commitment-option strong {
+    grid-column: 1;
+  }
+  .lt-commitment-option input {
+    inset-inline-end: 14px;
+    top: 17px;
+  }
+  .lt-commitment-option b {
+    font-size: 23px;
+  }
+  .lt-commitment-option .lt-commitment-discount {
+    justify-self: start;
+  }
+}

@@ -204,9 +204,8 @@ try {
     0,
     "Opening a private offer must not send an OTP",
   );
-  await customer
-    .getByLabel("תקופת התחייבות", { exact: true })
-    .selectOption("24");
+  assert.equal(await customer.getByRole("radio").count(), 3);
+  await customer.getByRole("radio", { name: "24 חודשים", exact: true }).check();
   assert.ok(
     (await customer.locator(".lt-quote").innerText()).includes("10,028.40"),
   );

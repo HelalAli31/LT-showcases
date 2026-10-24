@@ -1,6 +1,6 @@
 ﻿import nodemailer from "nodemailer";
 import { HttpError } from "./security.mjs";
-import { whatsappConfigured, whatsappToken } from "./meta.mjs";
+import { whatsappConfigured, whatsappToken, whatsappConfig } from "./meta.mjs";
 export function providers(config, request = fetch) {
   const mailReady = !!(config.MAIL_USER && config.MAIL_PASS);
   const smtp = mailReady
@@ -29,21 +29,22 @@ export function providers(config, request = fetch) {
         throw Error("Email rejected");
       return result.messageId;
     },
-    async whatsapp({ to, contractId }) {
-      if (!this.whatsappReady)
+    async whatsapp({ to, contractId, settings }) {
+      const effective = whatsappConfig(config, settings);
+      if (!whatsappConfigured(effective))
         throw new HttpError(503, "WhatsApp not configured");
-      const version = config.META_GRAPH_VERSION || "v25.0";
+      const version = effective.META_GRAPH_VERSION || "v25.0";
       if (
         !/^v\d+\.\d+$/.test(version) ||
-        !/^\d+$/.test(config.META_PHONE_NUMBER_ID)
+        !/^\d+$/.test(effective.META_PHONE_NUMBER_ID)
       )
         throw Error("Invalid Meta configuration");
       const response = await request(
-        `https://graph.facebook.com/${version}/${config.META_PHONE_NUMBER_ID}/messages`,
+        `https://graph.facebook.com/${version}/${effective.META_PHONE_NUMBER_ID}/messages`,
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${whatsappToken(config)}`,
+            Authorization: `Bearer ${whatsappToken(effective)}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -51,8 +52,8 @@ export function providers(config, request = fetch) {
             to: to.replace(/\D/g, ""),
             type: "template",
             template: {
-              name: config.META_TEMPLATE_NAME,
-              language: { code: config.META_TEMPLATE_LANGUAGE },
+              name: effective.META_TEMPLATE_NAME,
+              language: { code: effective.META_TEMPLATE_LANGUAGE },
               components: [
                 {
                   type: "body",
@@ -65,8 +66,15 @@ export function providers(config, request = fetch) {
         },
       );
       const data = await response.json();
-      if (!response.ok || !data.messages?.[0]?.id)
-        throw Error("WhatsApp provider rejected notification");
+      if (!response.ok || !data.messages?.[0]?.id) {
+        const providerCode = Number(data.error?.code);
+        throw Object.assign(Error("WhatsApp provider rejected notification"), {
+          code:
+            Number.isInteger(providerCode) && providerCode > 0
+              ? `META_${providerCode}`
+              : "META_REJECTED",
+        });
+      }
       return data.messages[0].id;
     },
   };

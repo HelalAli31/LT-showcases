@@ -20,6 +20,7 @@ export interface LegalTemplate {
   body: string;
   approved: boolean;
   reviewer?: string;
+  approvalKind?: "owner" | "legal_review";
 }
 export interface Quote {
   tier: string;
@@ -88,9 +89,14 @@ export interface Settings {
   privacyNotice: string;
   retentionPolicy: string;
   productionApproved: boolean;
+  signingMode?: "production" | "test";
+  whatsappEnabled?: boolean;
+  whatsappTemplateName?: string;
+  whatsappTemplateLanguage?: string;
   capabilities: {
     mail: boolean;
     whatsapp: boolean;
+    whatsappCredentials?: boolean;
     pdf: boolean;
     binding: boolean;
     publishing?: boolean;

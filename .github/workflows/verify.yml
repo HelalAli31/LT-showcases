@@ -22,6 +22,7 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - run: node tests/serverless-pdf.mjs
       - run: npm run test:e2e
       - run: node tests/render-pdf.mjs
       - run: npm audit --audit-level=moderate

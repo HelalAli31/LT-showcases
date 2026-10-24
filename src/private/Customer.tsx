@@ -1,7 +1,7 @@
 import type { OfferAccess, Contract, RequestError } from "./types";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/router";
-import { api, Shell, Field, Notice, Otp, QuoteCard } from "./shared";
+import { api, Shell, Field, Notice, Otp, QuoteCard, money } from "./shared";
 function Signature({ onChange }: { onChange: (v: string) => void }) {
   const ref = useRef<HTMLCanvasElement>(null),
     drawing = useRef(false),
@@ -251,18 +251,45 @@ export default function Customer() {
           <div className="lt-two-col">
             <div>
               <section className="lt-card">
-                <Field label="תקופת התחייבות">
-                  <select
-                    value={months}
-                    onChange={(e) => setMonths(Number(e.target.value))}
-                  >
-                    {p.rules.map((r) => (
-                      <option value={r.months} key={r.months}>
-                        {r.months} חודשים · {r.bps / 100}% הנחה
-                      </option>
-                    ))}
-                  </select>
-                </Field>
+                <fieldset className="lt-commitment">
+                  <legend>תקופת התחייבות</legend>
+                  <p>כל האפשרויות והמחירים לפניך. בחרו את התקופה המתאימה.</p>
+                  <div className="lt-commitment-options">
+                    {p.rules.map((r) => {
+                      const option = s.quotes.find(
+                        (v) => v.tier === tier && v.months === r.months,
+                      );
+                      return (
+                        <label
+                          key={r.months}
+                          className={`lt-commitment-option ${months === r.months ? "selected" : ""}`}
+                        >
+                          <input
+                            type="radio"
+                            name="commitment"
+                            aria-label={`${r.months} חודשים`}
+                            value={r.months}
+                            checked={months === r.months}
+                            onChange={() => setMonths(r.months)}
+                          />
+                          <strong>{r.months} חודשים</strong>
+                          <span className="lt-commitment-discount">
+                            {r.bps ? `${r.bps / 100}% הנחה` : "ללא הנחה"}
+                          </span>
+                          {r.bps > 0 && (
+                            <del>{money(option.originalMonthly)}</del>
+                          )}
+                          <b>
+                            {money(option.monthly)}
+                            <small> / חודש</small>
+                          </b>
+                          <span>כולל הקמה: {money(option.total)}</span>
+                          <span>חיסכון לתקופה: {money(option.savings)}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </fieldset>
                 <h2>היקף העבודה</h2>
                 <p className="lt-pre">{s.scope}</p>
                 <h3>אבני דרך ומסירה</h3>

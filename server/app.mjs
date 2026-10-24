@@ -36,8 +36,14 @@ import { renderAgreement, pdfFromHtml } from "./lib/documents.mjs";
 import { providers as providerFactory } from "./lib/providers.mjs";
 import { storage as storageFactory } from "./lib/storage.mjs";
 import { audit, enqueue, processJobs } from "./lib/jobs.mjs";
-import { verificationResponse } from "./lib/meta.mjs";
+import {
+  verificationResponse,
+  whatsappConfigured,
+  whatsappConfig,
+  whatsappToken,
+} from "./lib/meta.mjs";
 import { composeOffer } from "./lib/composer.mjs";
+import { bindingEnabled, exactLegalApproval } from "./lib/signing-mode.mjs";
 const asyncRoute = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch(next);
 const cleanOffer = (o) => ({
@@ -263,19 +269,23 @@ export function createApi({
   );
   app.get(
     "/api/admin/settings",
-    asyncRoute(async (req, res) =>
+    asyncRoute(async (req, res) => {
+      const settingsDoc = await settings();
       res.json({
-        ...(await settings()),
+        ...settingsDoc,
         capabilities: {
           mail: providers.mailReady,
-          whatsapp: providers.whatsappReady,
-          pdf: !config.VERCEL || !!config.CHROMIUM_PACK_URL,
-          binding: config.BINDING_SIGNATURES_ENABLED === "true",
+          whatsapp: whatsappConfigured(whatsappConfig(config, settingsDoc)),
+          whatsappCredentials: !!(
+            whatsappToken(config) && config.META_PHONE_NUMBER_ID
+          ),
+          pdf: true,
+          binding: bindingEnabled(config, settingsDoc),
           publishing: /^[a-f0-9]{64}$/i.test(config.DATA_ENCRYPTION_KEY || ""),
           storage: config.S3_BUCKET ? "private_s3" : "encrypted_mongodb",
         },
-      }),
-    ),
+      });
+    }),
   );
   app.put(
     "/api/admin/settings",
@@ -291,9 +301,26 @@ export function createApi({
           privacyNotice: z.string().min(50).max(16000),
           retentionPolicy: z.string().min(20).max(8000),
           productionApproved: z.boolean(),
+          signingMode: z.enum(["production", "test"]).optional(),
+          whatsappEnabled: z.boolean().optional(),
+          whatsappTemplateName: z
+            .string()
+            .regex(/^[a-z0-9_]{1,512}$/)
+            .optional(),
+          whatsappTemplateLanguage: z
+            .string()
+            .regex(/^[a-z]{2,3}(?:_[A-Z]{2})?$/)
+            .optional(),
         })
         .strict()
         .parse(req.body);
+      if (data.signingMode === "production")
+        requireValue(
+          data.productionApproved &&
+            data.businessId.trim() &&
+            data.businessAddress.trim(),
+          "יש להשלים את פרטי העסק ולאשר הפעלה בפועל",
+        );
       await transaction(client, async (session) => {
         await db
           .collection("settings")
@@ -303,11 +330,30 @@ export function createApi({
           "admin",
           "settings_updated",
           "main",
-          { productionApproved: data.productionApproved },
+          {
+            productionApproved: data.productionApproved,
+            signingMode: data.signingMode,
+          },
           session,
         );
       });
       res.json({ ok: true });
+    }),
+  );
+  app.get(
+    "/api/admin/diagnostics/pdf",
+    asyncRoute(async (req, res) => {
+      await limit(req, "pdf-diagnostic", 3, 300000);
+      req.operationStage = "pdf_diagnostic";
+      const started = Date.now();
+      const pdf = await makePdf(
+        "<!doctype html><html><body><h1>Luxury Tech PDF readiness</h1></body></html>",
+      );
+      res.json({
+        ready: true,
+        bytes: pdf.length,
+        elapsedMs: Date.now() - started,
+      });
     }),
   );
   app.get(
@@ -417,9 +463,11 @@ export function createApi({
     "/api/admin/templates/:id/approve",
     asyncRoute(async (req, res) => {
       const reviewer = text(req.body.reviewer, 200);
+      const approvalKind =
+        req.body.approvalKind === "owner" ? "owner" : "legal_review";
       requireValue(
         reviewer.length > 2 && req.body.confirm === true,
-        "יש לאשר בדיקה משפטית של גרסה זו",
+        "יש לאשר את גרסת התבנית ולציין את הגורם המאשר",
       );
       await transaction(client, async (session) => {
         const t = await db
@@ -431,6 +479,7 @@ export function createApi({
           {
             $set: {
               approved: true,
+              approvalKind,
               reviewer,
               approvedAt: new Date(),
               approvalDigest: digest({
@@ -445,7 +494,9 @@ export function createApi({
         await audit(
           db,
           "admin",
-          "legal_template_approved",
+          approvalKind === "owner"
+            ? "template_owner_approved"
+            : "legal_template_approved",
           t._id,
           { reviewer },
           session,
@@ -637,6 +688,7 @@ export function createApi({
   app.post(
     "/api/admin/offers/:id/publish",
     asyncRoute(async (req, res) => {
+      req.operationStage = "publish_validation";
       requireValue(
         /^[a-f0-9]{64}$/i.test(config.DATA_ENCRYPTION_KEY || ""),
         "לא ניתן לפרסם: יש להגדיר ב-Vercel את DATA_ENCRYPTION_KEY כמפתח הצפנה בן 64 תווי hex ולפרוס מחדש. אין לשנות מפתח קיים של הסכמים שמורים.",
@@ -648,6 +700,7 @@ export function createApi({
         revokedAt: { $exists: false },
       });
       requireValue(o, "ההצעה אינה טיוטה", 409);
+      req.operationStage = "publish_snapshot";
       const snapshot = await build(o),
         t = token();
       requireValue(
@@ -655,6 +708,7 @@ export function createApi({
         "הטיוטה או ברירות המחדל השתנו. יש לבדוק תצוגה מקדימה שוב.",
         409,
       );
+      req.operationStage = "publish_transaction";
       await transaction(client, async (session) => {
         const r = await db.collection("offers").updateOne(
           { _id: o._id, status: "draft", version: o.version },
@@ -920,8 +974,7 @@ export function createApi({
       res.json({
         snapshot: o.snapshot,
         email: req.customer.email,
-        mode:
-          config.BINDING_SIGNATURES_ENABLED === "true" ? "production" : "test",
+        mode: bindingEnabled(config, await settings()) ? "production" : "test",
       });
     }),
   );
@@ -966,6 +1019,7 @@ export function createApi({
     "/api/offers/:token/sign",
     offerAccess,
     asyncRoute(async (req, res) => {
+      req.operationStage = "sign_validation";
       await limit(req, "sign:" + req.customer.offerId, 5, 10 * 60000);
       const o = await byToken(req.params.token);
       owned(req, o);
@@ -1009,8 +1063,9 @@ export function createApi({
           metadata.height <= 1000,
         "ממדי החתימה אינם תקינים",
       );
-      const production = config.BINDING_SIGNATURES_ENABLED === "true",
-        settingsDoc = await settings();
+      const settingsDoc = await settings(),
+        production = bindingEnabled(config, settingsDoc);
+      let legalApproval;
       if (production) {
         requireValue(
           settingsDoc.productionApproved &&
@@ -1020,11 +1075,11 @@ export function createApi({
           "הפעלה מחייבת טרם אושרה",
           403,
         );
-        requireValue(
-          s.tiers.find((t) => t.name === q.tier).legal.approved,
-          "הנוסח המשפטי בהצעה טרם אושר",
-          403,
+        legalApproval = await exactLegalApproval(
+          db,
+          s.tiers.find((t) => t.name === q.tier).legal,
         );
+        requireValue(legalApproval, "הנוסח המשפטי בהצעה טרם אושר", 403);
       }
       const contractId = id(),
         at = new Date().toISOString();
@@ -1049,6 +1104,18 @@ export function createApi({
         },
         signatureDigest: hash(png),
         mode: production ? "production" : "test",
+        ...(legalApproval
+          ? {
+              legalApproval: {
+                templateId: legalApproval._id,
+                version: legalApproval.version,
+                reviewer: legalApproval.reviewer,
+                approvedAt: legalApproval.approvedAt,
+                approvalDigest: legalApproval.approvalDigest,
+                approvalKind: legalApproval.approvalKind || "legal_review",
+              },
+            }
+          : {}),
       };
       const evidenceDigest = digest(evidence),
         evidenceMac = createHmac(
@@ -1057,6 +1124,7 @@ export function createApi({
         )
           .update(evidenceDigest)
           .digest("hex");
+      req.operationStage = "agreement_render";
       const html = await renderAgreement(s, q, {
         id: contractId,
         at,
@@ -1067,6 +1135,7 @@ export function createApi({
         evidenceDigest,
         mode: evidence.mode,
       });
+      req.operationStage = "pdf_generation";
       let pdf = await makePdf(html);
       if (s.attachments?.length) {
         const combined = await PDFDocument.load(pdf);
@@ -1088,6 +1157,7 @@ export function createApi({
         }
         pdf = Buffer.from(await combined.save());
       }
+      req.operationStage = "encrypted_storage";
       const artifact = await storage.put(
         pdf,
         "contracts/" + contractId + ".enc",
@@ -1111,13 +1181,18 @@ export function createApi({
         artifact,
         payload: seal({ snapshot: s, quote: q, signer: data, html }, config),
       };
+      req.operationStage = "sign_transaction";
       try {
         await transaction(client, async (session) => {
           if (production) {
             const current = await db
               .collection("settings")
               .findOne({ _id: "main" }, { session });
-            requireValue(current.productionApproved, "הפעלה מחייבת בוטלה", 403);
+            requireValue(
+              current.productionApproved && bindingEnabled(config, current),
+              "הפעלה מחייבת בוטלה",
+              403,
+            );
           }
           const r = await db.collection("offers").updateOne(
             {
@@ -1453,6 +1528,13 @@ export function createApi({
           path: req.route?.path || "unknown",
           name: error.name,
           code: error.code,
+          stage: req.operationStage,
+          causeName: error.cause?.name,
+          causeCode: error.cause?.code,
+          frames: error.stack
+            ?.split("\n")
+            .slice(1, 4)
+            .map((v) => v.trim()),
         }),
       );
     res.status(status).json({

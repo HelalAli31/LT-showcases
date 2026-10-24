@@ -25,9 +25,15 @@ export async function api(path: string, method = "GET", data?: unknown) {
     throw Error("שירות אינו זמין");
   }
   if (!response.ok) {
-    const error = Object.assign(Error(value.error || "הפעולה נכשלה"), {
-      status: response.status,
-    });
+    const error = Object.assign(
+      Error(
+        (value.error || "הפעולה נכשלה") +
+          (value.requestId ? ` (מזהה תקלה: ${value.requestId})` : ""),
+      ),
+      {
+        status: response.status,
+      },
+    );
     throw error;
   }
   return value;

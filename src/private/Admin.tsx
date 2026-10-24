@@ -473,6 +473,10 @@ function Settings({
           "privacyNotice",
           "retentionPolicy",
           "productionApproved",
+          "signingMode",
+          "whatsappEnabled",
+          "whatsappTemplateName",
+          "whatsappTemplateLanguage",
         ].map((k) => [k, value[k]]),
       ),
     ),
@@ -510,6 +514,18 @@ function Settings({
           }
         }}
       >
+        <Field label="מצב חתימה">
+          <select
+            value={String(
+              form.signingMode ||
+                (value.capabilities.binding ? "production" : "test"),
+            )}
+            onChange={(e) => setForm({ ...form, signingMode: e.target.value })}
+          >
+            <option value="production">הסכמים בפועל</option>
+            <option value="test">סביבת בדיקה</option>
+          </select>
+        </Field>
         {[
           ["businessName", "שם ספק משפטי"],
           ["businessId", "מספר עוסק / חברה"],
@@ -537,6 +553,48 @@ function Settings({
           />
           הנמען העסקי הסכים לקבל התראות WhatsApp
         </label>
+        <label className="lt-check">
+          <input
+            type="checkbox"
+            checked={
+              form.whatsappEnabled === undefined
+                ? value.capabilities.whatsapp
+                : !!form.whatsappEnabled
+            }
+            onChange={(e) =>
+              setForm({ ...form, whatsappEnabled: e.target.checked })
+            }
+          />
+          שליחת התראת WhatsApp לאחר חתימה בפועל
+        </label>
+        <div className="lt-form-grid">
+          <Field label="שם תבנית WhatsApp מאושרת">
+            <input
+              dir="ltr"
+              placeholder="lt_proposal"
+              value={String(form.whatsappTemplateName || "")}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  whatsappTemplateName: e.target.value || undefined,
+                })
+              }
+            />
+          </Field>
+          <Field label="קוד שפת תבנית WhatsApp">
+            <input
+              dir="ltr"
+              placeholder="en_US"
+              value={String(form.whatsappTemplateLanguage || "")}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  whatsappTemplateLanguage: e.target.value || undefined,
+                })
+              }
+            />
+          </Field>
+        </div>
         {[
           ["privacyNotice", "הודעת פרטיות ללקוח"],
           ["retentionPolicy", "מדיניות שמירה, מחיקה ויצוא"],
@@ -560,10 +618,7 @@ function Settings({
           אני מאשר שהמערכת, תהליך הראיות, הודעת הפרטיות ומדיניות השמירה נבדקו
           ואושרו להפעלה מחייבת
         </label>
-        <p>
-          אישור זה נפרד מאישור משפטי לכל גרסת תבנית וממשתנה
-          BINDING_SIGNATURES_ENABLED בפריסה.
-        </p>
+        <p>הפעלה בפועל דורשת גם אישור של גרסת תבנית ההסכם המדויקת.</p>
         <button disabled={busy}>שמירת הגדרות</button>
       </form>
     </>
@@ -590,7 +645,9 @@ function Templates() {
           </h2>
           <p>
             {t.approved
-              ? "אושר משפטית על ידי " + t.reviewer
+              ? (t.approvalKind === "owner"
+                  ? "אושר להפעלה על ידי בעל העסק: "
+                  : "אושר משפטית על ידי ") + t.reviewer
               : "ממתין לבדיקה משפטית"}
           </p>
           <details>

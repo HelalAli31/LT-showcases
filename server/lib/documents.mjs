@@ -7,12 +7,10 @@ export async function pdfFromHtml(html, config = process.env) {
   try {
     const { chromium } = await import("playwright-core");
     if (config.VERCEL) {
-      const { default: binary } = await import("@sparticuz/chromium-min");
-      if (!config.CHROMIUM_PACK_URL)
-        throw Error("CHROMIUM_PACK_URL required on Vercel");
+      const { default: binary } = await import("@sparticuz/chromium");
       browser = await chromium.launch({
         args: binary.args,
-        executablePath: await binary.executablePath(config.CHROMIUM_PACK_URL),
+        executablePath: await binary.executablePath(),
         headless: true,
       });
     } else {
@@ -31,6 +29,10 @@ export async function pdfFromHtml(html, config = process.env) {
       footerTemplate:
         '<div style="font-family:Arial;font-size:9px;text-align:center;width:100%;color:#777">Luxury Tech · <span class="pageNumber"></span> / <span class="totalPages"></span></div>',
       margin: { top: "18mm", left: "17mm", right: "17mm", bottom: "23mm" },
+    });
+  } catch (cause) {
+    throw Object.assign(Error("Agreement PDF generation failed", { cause }), {
+      code: "PDF_GENERATION_FAILED",
     });
   } finally {
     await browser?.close();

@@ -3,12 +3,16 @@ const config: NextConfig = {
   reactStrictMode: true,
   serverExternalPackages: [
     "mongodb",
-    "@sparticuz/chromium-min",
+    "@sparticuz/chromium",
     "playwright",
     "playwright-core",
   ],
   outputFileTracingIncludes: {
-    "/api/**/*": ["./public/fonts/**/*", "./public/assets/logo.png"],
+    "/api/**/*": [
+      "./public/fonts/**/*",
+      "./public/assets/logo.png",
+      "./node_modules/@sparticuz/chromium/bin/**/*",
+    ],
   },
   async headers() {
     return ["/admin/:path*", "/offer/:path*", "/contract-access/:path*"].map(

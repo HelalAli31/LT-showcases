@@ -1,5 +1,5 @@
 ﻿import { id, digest } from "./security.mjs";
-import { whatsappConfigured } from "./meta.mjs";
+import { whatsappConfigured, whatsappConfig } from "./meta.mjs";
 import { unseal } from "./security.mjs";
 export async function audit(db, actor, action, subject, detail = {}, session) {
   const record = { _id: id(), actor, action, subject, detail, at: new Date() };
@@ -16,7 +16,8 @@ export async function enqueue(db, contract, settings, config, session) {
     const configured =
       job.channel === "email"
         ? !!(config.MAIL_USER && config.MAIL_PASS && job.recipient)
-        : whatsappConfigured(config) && settings.whatsappConsent;
+        : whatsappConfigured(whatsappConfig(config, settings)) &&
+          settings.whatsappConsent;
     await db.collection("jobs").insertOne(
       {
         _id: id(),
@@ -88,13 +89,14 @@ export async function processJobs(db, providers, config, max = 10) {
           .findOne({ _id: "main" });
         if (
           !settings.whatsappConsent ||
-          config.META_SEND_ENABLED !== "true" ||
+          !whatsappConfigured(whatsappConfig(config, settings)) ||
           job.mode === "test"
         )
           throw Object.assign(Error("WhatsApp disabled"), { status: 503 });
         providerId = await providers.whatsapp({
           to: job.recipient,
           contractId: job.contractId,
+          settings,
         });
       }
       await db.collection("jobs").updateOne(
@@ -115,7 +117,11 @@ export async function processJobs(db, providers, config, max = 10) {
                 : job.attempts >= 6
                   ? "failed"
                   : "retry",
-            lastError: e.status === 503 ? "not_configured" : "provider_error",
+            lastError: /^META_\d+$/.test(e.code || "")
+              ? e.code
+              : e.status === 503
+                ? "not_configured"
+                : "provider_error",
             nextAt: new Date(
               Date.now() + Math.min(3600000, 30000 * 2 ** job.attempts),
             ),
