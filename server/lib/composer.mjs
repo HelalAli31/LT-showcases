@@ -7,7 +7,7 @@ const briefSchema = z
   .object({
     product: z.enum(["ecommerce", "management"]),
     clientLabel: z.string().trim().min(1).max(200),
-    recipientEmail: z.string().trim().email().max(254),
+    recipientEmail: offerSchema.shape.recipientEmail,
     title: z.string().trim().max(200).default(""),
     description: z.string().trim().min(3).max(8000),
     specialRequirements: z.string().trim().max(8000).default(""),

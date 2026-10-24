@@ -1,4 +1,5 @@
 import PriceRounding from "./PriceRounding";
+import QuickOffer from "./QuickOffer";
 import OfferSelection from "./OfferSelection";
 import ProjectScope, {
   ProjectScopeEditor,
@@ -209,6 +210,7 @@ export default function GuidedBuilder({
         </div>
         <span className="lt-tag">{draftId ? "טיוטה שמורה" : "הצעה חדשה"}</span>
       </div>
+      {!offerId && !draftId && <QuickOffer />}
       <div className="lt-builder-steps">
         <span>
           <b>01</b> הלקוח והפרויקט

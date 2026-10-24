@@ -43,6 +43,7 @@ import {
   whatsappToken,
 } from "./lib/meta.mjs";
 import { composeOffer } from "./lib/composer.mjs";
+import { presets, adminPresets } from "../shared/project-presets.mjs";
 import { bindingEnabled, exactLegalApproval } from "./lib/signing-mode.mjs";
 const asyncRoute = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch(next);
@@ -584,6 +585,77 @@ export function createApi({
       );
     }),
   );
+  app.get(
+    "/api/admin/offers/quick-defaults",
+    asyncRoute(async (req, res) => {
+      const previous = await db
+        .collection("offers")
+        .findOne(
+          { snapshot: { $exists: true } },
+          { sort: { publishedAt: -1 } },
+        );
+      res.json({ tax: previous?.snapshot.tax || null });
+    }),
+  );
+  app.post(
+    "/api/admin/offers/quick",
+    asyncRoute(async (req, res) => {
+      const data = z
+        .object({
+          clientLabel: z.string().trim().min(1).max(200),
+          product: z.enum(["ecommerce", "management"]).default("ecommerce"),
+          tax: offerSchema.shape.tax,
+        })
+        .strict()
+        .parse(req.body);
+      const currentSettings = await settings();
+      const catalog = await db.collection("catalog").find().toArray();
+      const product = catalog.find((p) => p._id === data.product);
+      requireValue(product, "השירות אינו זמין", 400);
+      const tiers = product.tiers.filter((t) =>
+        ["STARTER", "PRO"].includes(t.name),
+      );
+      requireValue(tiers.length, "אין מסלולי ברירת מחדל זמינים", 400);
+      const pages = presets[data.product].map(([name, path, description]) => ({
+        name,
+        path,
+        description,
+        tiers: [],
+      }));
+      if (data.product === "ecommerce") pages.push(...adminPresets);
+      const input = composeOffer(
+        {
+          ...data,
+          recipientEmail: "",
+          description: product.label,
+          deliveryDays: 30,
+          revisionRounds: 3,
+          depositPercent: 55,
+          expires: new Date(Date.now() + 14 * 86400000).toISOString(),
+          tiers,
+          pages,
+          rules: currentSettings.rules,
+          discountSetup: false,
+        },
+        currentSettings,
+        catalog,
+      );
+      const doc = {
+        _id: id(),
+        input,
+        status: "draft",
+        version: 1,
+        createdAt: new Date(),
+      };
+      // Use the same legal, pricing and publication gates as the full editor.
+      const snapshot = await build(doc);
+      await transaction(client, async (session) => {
+        await db.collection("offers").insertOne(doc, { session });
+        await audit(db, "admin", "offer_quick_drafted", doc._id, {}, session);
+      });
+      res.status(201).json({ _id: doc._id, previewDigest: snapshot.digest });
+    }),
+  );
   app.post(
     "/api/admin/offers/compose",
     asyncRoute(async (req, res) => {
@@ -748,17 +820,18 @@ export function createApi({
           { session },
         );
         requireValue(r.modifiedCount, "הטיוטה השתנתה. נסו שוב.", 409);
-        await db.collection("clients").updateOne(
-          { _id: hash(o.input.recipientEmail) },
-          {
-            $set: {
-              email: o.input.recipientEmail,
-              label: o.input.clientLabel,
-              updatedAt: new Date(),
+        if (o.input.recipientEmail)
+          await db.collection("clients").updateOne(
+            { _id: hash(o.input.recipientEmail) },
+            {
+              $set: {
+                email: o.input.recipientEmail,
+                label: o.input.clientLabel,
+                updatedAt: new Date(),
+              },
             },
-          },
-          { upsert: true, session },
-        );
+            { upsert: true, session },
+          );
         await audit(
           db,
           "admin",

@@ -27,6 +27,7 @@ export const offerSchema = z
       .trim()
       .email()
       .max(254)
+      .or(z.literal(""))
       .transform((s) => s.toLowerCase()),
     clientLabel: z.string().max(200).default(""),
     description: paragraph,

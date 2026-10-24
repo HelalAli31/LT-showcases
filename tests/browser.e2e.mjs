@@ -501,6 +501,39 @@ try {
     fullPage: true,
   });
   assert.deepEqual(errors, [], "Browser JavaScript errors");
+  const quickPage = await ctx.newPage();
+  await quickPage.goto(origin + "/admin/offers/new");
+  await quickPage
+    .getByLabel("שם לקוח להצעה מהירה", { exact: true })
+    .fill("לקוח מהיר QA");
+  await quickPage
+    .getByRole("button", { name: "יצירת הצעת ברירת מחדל וקישור", exact: true })
+    .click();
+  const quickLink = quickPage.getByLabel("קישור ההצעה המהירה", { exact: true });
+  await quickLink.waitFor();
+  const quickCustomer = await browser.newPage();
+  await quickCustomer.goto(await quickLink.inputValue());
+  await quickCustomer
+    .getByRole("button", { name: "בחירת מסלול STARTER", exact: true })
+    .waitFor();
+  await quickCustomer
+    .getByRole("button", { name: "בחירת מסלול PRO", exact: true })
+    .waitFor();
+  assert.equal(
+    await quickCustomer
+      .getByRole("button", { name: "בחירת מסלול CUSTOM", exact: true })
+      .count(),
+    0,
+  );
+  assert.equal(
+    await quickCustomer
+      .locator(".lt-project-scope")
+      .getByRole("heading", { name: "ניהול הזמנות", exact: true })
+      .count(),
+    1,
+  );
+  await quickCustomer.close();
+  await quickPage.close();
   console.log(
     "Browser E2E passed: public site, admin builder/publication, private-link access without SMTP or OTP, mobile exact pricing, full agreement, canvas signing, encrypted PDF download and contract dashboard.",
   );
