@@ -1,4 +1,5 @@
 import OfferSelection from "./OfferSelection";
+import ProjectScope from "./ProjectScope";
 import type { OfferAccess, Contract, RequestError } from "./types";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/router";
@@ -244,6 +245,7 @@ export default function Customer() {
           <div className="lt-two-col">
             <div>
               <section className="lt-card">
+                <ProjectScope snapshot={s} tier={tier} />
                 <h2>היקף העבודה</h2>
                 <p className="lt-pre">{s.scope}</p>
                 <h3>אבני דרך ומסירה</h3>

@@ -36,6 +36,8 @@ export interface Quote {
   addons?: number;
 }
 export interface OfferInput {
+  pages?: ProjectPage[];
+  projectDetails?: ProjectDetails;
   title: string;
   product: string;
   recipientEmail: string;
@@ -66,6 +68,18 @@ export interface OfferInput {
   };
   addons: { label: string; amount: number }[];
   attachments: string[];
+}
+export interface ProjectPage {
+  name: string;
+  path: string;
+  description: string;
+  tiers: string[];
+}
+export interface ProjectDetails {
+  design: string;
+  content: string;
+  integrations: string;
+  acceptance: string;
 }
 export interface Snapshot extends Omit<
   OfferInput,

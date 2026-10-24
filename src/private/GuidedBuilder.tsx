@@ -1,4 +1,8 @@
 import OfferSelection from "./OfferSelection";
+import ProjectScope, {
+  ProjectScopeEditor,
+  emptyProjectDetails,
+} from "./ProjectScope";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import type {
@@ -46,6 +50,8 @@ export default function GuidedBuilder({
   const [brief, setBrief] = useState(emptyBrief);
   const [catalog, setCatalog] = useState<Product[]>([]);
   const [tiers, setTiers] = useState<Tier[]>([]);
+  const [pages, setPages] = useState<OfferInput["pages"]>([]);
+  const [projectDetails, setProjectDetails] = useState(emptyProjectDetails);
   const [offerRules, setOfferRules] = useState(settings.rules);
   const [tax, setTax] = useState({ mode: "", bps: 0 });
   const [discountSetup, setDiscountSetup] = useState(false);
@@ -67,6 +73,8 @@ export default function GuidedBuilder({
     setAdvanced(false);
     setOfferRules(settings.rules);
     setExtras({});
+    setPages([]);
+    setProjectDetails(emptyProjectDetails);
     setTax({ mode: "", bps: 0 });
     setDiscountSetup(false);
     setError("");
@@ -91,6 +99,8 @@ export default function GuidedBuilder({
             expires: localDate(input.expires),
           });
           setTiers(input.tiers);
+          setPages(input.pages || []);
+          setProjectDetails(input.projectDetails || emptyProjectDetails);
           setTax(input.tax);
           setDiscountSetup(input.discountSetup);
           setOfferRules(input.rules || settings.rules);
@@ -149,6 +159,8 @@ export default function GuidedBuilder({
       rules: offerRules,
       tax,
       discountSetup,
+      pages,
+      projectDetails,
       ...extras,
     });
     let id = draftId;
@@ -301,6 +313,16 @@ export default function GuidedBuilder({
               />
             </Field>
           </section>
+          <ProjectScopeEditor
+            pages={pages}
+            details={projectDetails}
+            product={brief.product}
+            onChange={(p, d) => {
+              setPages(p);
+              setProjectDetails(d);
+              invalidate();
+            }}
+          />
           <section className="lt-card">
             <div className="lt-section-heading">
               <span className="lt-step-number">02</span>
@@ -595,6 +617,7 @@ export default function GuidedBuilder({
             onChange={setSelection}
           />
           {quote && <QuoteCard snapshot={preview} quote={quote} />}
+          <ProjectScope snapshot={preview} tier={selection.tier} />
           <div className="lt-document-toolbar">
             <strong>תצוגת ההסכם המלא</strong>
             <a

@@ -31,6 +31,36 @@ export const offerSchema = z
     clientLabel: z.string().max(200).default(""),
     description: paragraph,
     scope: paragraph.min(1),
+    pages: z
+      .array(
+        z.object({
+          name: z.string().trim().min(1).max(200),
+          path: z
+            .string()
+            .trim()
+            .max(200)
+            .refine(
+              (v) => !v || (v.startsWith("/") && !v.startsWith("//")),
+              "Page path must be relative",
+            )
+            .default(""),
+          description: z.string().trim().min(1).max(4000),
+          tiers: z
+            .array(z.enum(["STARTER", "PRO", "CUSTOM"]))
+            .max(3)
+            .default([]),
+        }),
+      )
+      .max(50)
+      .default([]),
+    projectDetails: z
+      .object({
+        design: paragraph.default(""),
+        content: paragraph.default(""),
+        integrations: paragraph.default(""),
+        acceptance: paragraph.default(""),
+      })
+      .default({ design: "", content: "", integrations: "", acceptance: "" }),
     milestones: paragraph,
     delivery: paragraph.min(1),
     paymentTerms: paragraph.min(1),
@@ -109,6 +139,8 @@ export function snapshotFrom(input, settings, legal) {
     expires: data.expires,
     description: data.description,
     scope: data.scope,
+    pages: data.pages,
+    projectDetails: data.projectDetails,
     milestones: data.milestones,
     delivery: data.delivery,
     paymentTerms: data.paymentTerms,

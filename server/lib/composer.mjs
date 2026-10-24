@@ -11,6 +11,8 @@ const briefSchema = z
     title: z.string().trim().max(200).default(""),
     description: z.string().trim().min(3).max(8000),
     specialRequirements: z.string().trim().max(8000).default(""),
+    pages: offerSchema.shape.pages,
+    projectDetails: offerSchema.shape.projectDetails,
     deliveryDays: z.number().int().min(1).max(365),
     revisionRounds: z.number().int().min(0).max(20),
     depositPercent: z.number().int().min(0).max(100),
@@ -60,6 +62,8 @@ export function composeOffer(value, settings, catalog) {
     clientLabel: b.clientLabel,
     recipientEmail: b.recipientEmail,
     description: b.description,
+    pages: b.pages,
+    projectDetails: b.projectDetails,
     scope: `${b.description}\n\nהעבודה כוללת אפיון, התאמת עיצוב, פיתוח, בדיקות והתאמה למחשב ולמובייל, בהתאם לרכיבי המסלול שייבחר.\n${b.specialRequirements ? "דרישות מיוחדות הכלולות בהצעה:\n" + b.specialRequirements : "לא הוגדרו דרישות מיוחדות מעבר לתכולת המסלול."}\nכל שינוי בהיקף טעון אישור כתוב ונפרד.`,
     milestones:
       "1. אישור האפיון, מסירת חומרים ותשלום ראשון.\n2. הקמה ופיתוח לפי התכולה המאושרת.\n3. הצגה ללקוח וריכוז תיקונים.\n4. בדיקות, אישור מסירה והשלמת התשלום לפני העלייה לאוויר.",

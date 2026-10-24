@@ -137,6 +137,30 @@ try {
     .getByLabel("דרישות מיוחדות ודברים שחשוב לכלול")
     .fill("חיבור למלאי קיים לאחר קבלת גישת API");
   await page.getByLabel("דמי הקמה PRO ₪").fill("2490.00");
+  await page
+    .getByRole("button", { name: "הוספת עמוד / מסך", exact: true })
+    .click();
+  await page.getByLabel("שם עמוד 1", { exact: true }).fill("עמוד בית מפורט");
+  await page.getByLabel("כתובת עמוד 1 (אופציונלי)", { exact: true }).fill("/");
+  await page
+    .getByLabel("מה יכלול עמוד 1", { exact: true })
+    .fill("אזור פתיחה, קטגוריות ומוצרים נבחרים");
+  await page
+    .getByRole("button", { name: "הוספת עמוד / מסך", exact: true })
+    .click();
+  await page.getByLabel("שם עמוד 2", { exact: true }).fill("עמוד דוחות מפורט");
+  await page
+    .getByLabel("מה יכלול עמוד 2", { exact: true })
+    .fill("נתוני מכירות וניתוח הזמנות לפי טווח תאריכים");
+  await page
+    .getByRole("checkbox", { name: "עמוד 2 כלול ב-STARTER", exact: true })
+    .uncheck();
+  await page
+    .getByRole("checkbox", { name: "עמוד 2 כלול ב-CUSTOM", exact: true })
+    .uncheck();
+  await page
+    .getByLabel("עיצוב וחוויית שימוש", { exact: true })
+    .fill("עיצוב מותאם למיתוג העסק ולמובייל");
   await page.getByLabel("מחיר חודשי PRO ₪").fill("349.00");
   for (const tier of ["STARTER", "CUSTOM"]) {
     await page
@@ -252,6 +276,11 @@ try {
   );
   assert.ok(
     (await previewFrame.locator("body").innerText()).includes(
+      "עמוד דוחות מפורט",
+    ),
+  );
+  assert.ok(
+    (await previewFrame.locator("body").innerText()).includes(
       "חיבור למלאי קיים",
     ),
   );
@@ -302,6 +331,13 @@ try {
   await customer
     .getByRole("button", { name: "בחירת מסלול STARTER", exact: true })
     .click();
+  assert.equal(
+    await customer
+      .locator(".lt-project-scope")
+      .getByText("עמוד דוחות מפורט", { exact: true })
+      .count(),
+    0,
+  );
   await customer.getByRole("radio", { name: "24 חודשים", exact: true }).check();
   assert.ok(
     (await customer.locator(".lt-quote").innerText()).includes("4,208.40"),
@@ -315,6 +351,13 @@ try {
   await customer
     .getByRole("button", { name: "בחירת מסלול PRO", exact: true })
     .click();
+  assert.equal(
+    await customer
+      .locator(".lt-project-scope")
+      .getByText("עמוד דוחות מפורט", { exact: true })
+      .count(),
+    1,
+  );
   await customer.getByRole("radio", { name: "24 חודשים", exact: true }).check();
   assert.ok(
     (await customer.locator(".lt-quote").innerText()).includes("10,028.40"),

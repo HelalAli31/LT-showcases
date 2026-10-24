@@ -1,4 +1,8 @@
 import OfferSelection from "./OfferSelection";
+import ProjectScope, {
+  ProjectScopeEditor,
+  emptyProjectDetails,
+} from "./ProjectScope";
 import type { Settings, OfferInput, Product, Offer, Snapshot } from "./types";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -11,6 +15,8 @@ const blank = {
   clientLabel: "",
   description: "",
   scope: "",
+  pages: [],
+  projectDetails: emptyProjectDetails,
   milestones: "",
   delivery: "",
   paymentTerms: "",
@@ -88,6 +94,8 @@ export default function Builder({
               rules: t.rules || d.input.rules || settings.rules,
             })),
             attachments: d.input.attachments || [],
+            pages: d.input.pages || [],
+            projectDetails: d.input.projectDetails || emptyProjectDetails,
           });
           setLink(d.url ? location.origin + d.url : "");
         })
@@ -426,6 +434,15 @@ export default function Builder({
             );
           })}
         </section>
+        <ProjectScopeEditor
+          pages={form.pages}
+          details={form.projectDetails}
+          product={form.product}
+          onChange={(pages, projectDetails) => {
+            setForm((v) => ({ ...v, pages, projectDetails }));
+            setPreview(undefined);
+          }}
+        />
         <section className="lt-card">
           <h2>היקף ותנאי התקשרות</h2>
           {Object.entries(paragraphLabels).map(([key, label]) => (
@@ -612,6 +629,7 @@ export default function Builder({
             }}
           />
           {pq && <QuoteCard snapshot={preview} quote={pq} />}
+          <ProjectScope snapshot={preview} tier={previewTier} />
           <iframe
             title="תצוגה מקדימה של ההסכם"
             className="lt-agreement lt-document-preview"

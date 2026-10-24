@@ -4,6 +4,8 @@ The project now runs on **Next.js**, with the existing React public landing page
 
 ## Routes
 
+The project scope editor lists the actual pages/screens to build, with a name, optional relative URL, detailed contents and tier applicability for each. Admins can explicitly add and edit common ecommerce/management page suggestions, or enter their own. Additional fields cover design, client content, integrations and delivery acceptance. These values persist through draft editing/composition and freeze into published snapshots. Customer views and the signed agreement show only pages included in the selected tier. Existing signed snapshots/PDFs are not modified.
+
 The new-offer screen is a guided composer: enter the customer, service brief and critical requirements, choose tiers/prices, and confirm tax treatment. It automatically fills the scope, delivery stages, deposit/balance terms, support, exclusions, ownership, cancellation and renewal wording on the server. Delivery days, revision rounds and deposit percentage are editable (initially 30 / 3 / 55, based on the supplied reference contract). It uses the current admin catalog, the exact offer prices and authorized discount rules. No model API key is required, and generation never invents an integration or an approval.
 
 Generation saves a draft and shows the actual branded HTML agreement inline. That same renderer produces the signed PDF. Advanced editing and attachments remain available after generation. Manually customized clauses are retained in the detailed editor rather than silently regenerated. Signing mode and exact-version legal approval remain explicit settings; automatically filling a document does not approve its legal text.

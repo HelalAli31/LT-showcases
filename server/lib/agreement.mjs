@@ -21,6 +21,31 @@ export async function renderAgreement(s, q, signing) {
   ]);
   const [font, logo] = await resources;
   const p = s.tiers.find((t) => t.name === q.tier);
+  const projectScope = () => {
+    const pages = (s.pages || []).filter(
+      (page) => !page.tiers.length || page.tiers.includes(q.tier),
+    );
+    const labels = {
+      design: "עיצוב וחוויית שימוש",
+      content: "תוכן, תמונות והזנת מידע",
+      integrations: "חיבורים ואינטגרציות",
+      acceptance: "תוצרים ואישור מסירה",
+    };
+    return (
+      block(
+        "העמודים והמסכים שייבנו",
+        pages
+          .map(
+            (page, i) =>
+              `${i + 1}. ${page.name}${page.path ? " (" + page.path + ")" : ""}\n${page.description}`,
+          )
+          .join("\n\n"),
+      ) +
+      Object.entries(s.projectDetails || {})
+        .map(([key, value]) => block(labels[key], value))
+        .join("")
+    );
+  };
   const product =
     {
       ecommerce: "פיתוח חנות מסחר אלקטרוני",
@@ -69,7 +94,7 @@ export async function renderAgreement(s, q, signing) {
 ${signing?.mode === "test" ? '<div class="status">מסמך לבדיקה בלבד - אינו הסכם מחייב. הנוסח טעון אישור משפטי.</div>' : !signing ? '<div class="status">לעיון לפני חתימה · המחירים והתנאים המפורטים במסמך הם חלק מההצעה האישית.</div>' : '<div class="status">עותק חתום · ההסכם והבחירה המסחרית נשמרו במועד החתימה.</div>'}
 <div class="parties">${party("הספק", s.supplier.name || "Luxury Tech", [s.supplier.id ? "מספר עוסק: " + s.supplier.id : "", s.supplier.address, s.supplier.email])}${party("הלקוח", signing?.signer.businessName || signing?.signer.fullName || s.clientName || "הלקוח המיועד בהצעה", signing ? [signing.signer.fullName, signing.email, signing.signer.phone, signing.signer.registrationId ? "מספר זיהוי: " + signing.signer.registrationId : "", signing.signer.company ? "תפקיד והרשאת חתימה: " + signing.signer.role : "לקוח פרטי"] : ["הפרטים המלאים יתווספו בעת החתימה."])}</div>
 <div class="commercial"><div class="commercial-heading"><h2>ההשקעה בפרויקט</h2><span class="pill">${esc(q.tier)} / ${q.months} חודשים</span></div><div class="price-summary"><div><small>שירות חודשי</small>${q.discountBps ? `<div><del class="original">${money(q.originalMonthly)}</del><span class="discount">${q.discountBps / 100}% הנחה</span></div>` : ""}<strong class="price">${money(q.monthly)}</strong><div class="price-note">${esc(taxText)}</div></div><div><small>הקמה ופיתוח · חד-פעמי</small><strong class="setup">${money(q.setup)}</strong><div class="price-note">${s.discountSetup ? "כולל הנחת התחייבות שאושרה במפורש" : "ללא הנחת התחייבות"}</div></div></div><table><tbody>${rows.map(([label, value]) => `<tr><td>${esc(label)}</td><td><bdi>${esc(value)}</bdi></td></tr>`).join("")}</tbody></table><div class="commercial-notes"><p>${esc(taxText)}. שיעור המס שנקבע: ${s.tax.bps / 100}%.</p><p>ההנחה תקפה לכל ${q.months} חודשי ההתחייבות. ${s.discountSetup ? "ההנחה אושרה גם לדמי ההקמה." : "ההנחה חלה על החיוב החודשי בלבד."}</p><p>הסכום הכולל כולל הקמה ותוספות חד-פעמיות כמפורט בטבלה. החיסכון מוצג לפני מס נוסף.</p></div></div>
-${block("מה בונים יחד", s.description)}${block("היקף העבודה והדרישות המיוחדות", s.scope)}<section class="clause"><h2><span>${String(++section).padStart(2, "0")}</span>מה כלול במסלול ${esc(q.tier)}</h2><ul class="features">${p.features.map((f) => `<li>${esc(f)}</li>`).join("")}</ul></section>${block("כמויות, תיקונים ומגבלות", p.limits)}${block("מחוץ להיקף ההצעה", p.exclusions)}${block("שלבי העבודה", s.milestones)}${block("לוחות זמנים ומסירה", s.delivery)}${block("תשלומים והפעלת השירות", s.paymentTerms)}${block("שירות, תמיכה ותחזוקה", p.support)}${block("שירותים ועלויות צד שלישי", s.thirdPartyCosts)}${block("תוספות שהוזמנו", s.addons.map((a) => a.label + ": " + money(a.amount)).join("\n"))}${block("תקופת ההנחה וחידוש", s.renewal)}${block("ביטול וסיום התקשרות", s.cancellation)}${block("קניין רוחני ורישיון שימוש", s.ipTerms)}${block("מידע ויצוא בסיום השירות", s.dataExit)}${block("אחריות וסעדים", s.liability)}${block("דין ויישוב מחלוקות", s.jurisdiction)}${block("נספחים מצורפים", (s.attachments || []).map((a) => a.label + "\nSHA-256: " + a.digest).join("\n\n"))}
+${block("מה בונים יחד", s.description)}${block("היקף העבודה והדרישות המיוחדות", s.scope)}${projectScope()}<section class="clause"><h2><span>${String(++section).padStart(2, "0")}</span>מה כלול במסלול ${esc(q.tier)}</h2><ul class="features">${p.features.map((f) => `<li>${esc(f)}</li>`).join("")}</ul></section>${block("כמויות, תיקונים ומגבלות", p.limits)}${block("מחוץ להיקף ההצעה", p.exclusions)}${block("שלבי העבודה", s.milestones)}${block("לוחות זמנים ומסירה", s.delivery)}${block("תשלומים והפעלת השירות", s.paymentTerms)}${block("שירות, תמיכה ותחזוקה", p.support)}${block("שירותים ועלויות צד שלישי", s.thirdPartyCosts)}${block("תוספות שהוזמנו", s.addons.map((a) => a.label + ": " + money(a.amount)).join("\n"))}${block("תקופת ההנחה וחידוש", s.renewal)}${block("ביטול וסיום התקשרות", s.cancellation)}${block("קניין רוחני ורישיון שימוש", s.ipTerms)}${block("מידע ויצוא בסיום השירות", s.dataExit)}${block("אחריות וסעדים", s.liability)}${block("דין ויישוב מחלוקות", s.jurisdiction)}${block("נספחים מצורפים", (s.attachments || []).map((a) => a.label + "\nSHA-256: " + a.digest).join("\n\n"))}
 <div class="legal-heading"><h2>${esc(p.legal.title)}</h2><p>תנאים כלליים · גרסת תבנית ${esc(p.legal.version)} · חלק בלתי נפרד מההסכם</p></div>${legalSections}${block("פרטיות ושימוש במידע", s.privacyNotice)}
 ${signing ? `<section class="signature-box"><h2>אישור ההסכם וחתימת הלקוח</h2><p>החותם קרא ואישר בנפרד את ההסכם ואת הודעת הפרטיות והצהיר על כוונתו לחתום${signing.signer.company ? " ועל סמכותו להתחייב בשם החברה" : ""}.</p><img class="signature" alt="חתימת הלקוח" src="${esc(signing.signer.signature)}"><div class="evidence">${esc(signing.signer.fullName)} · חתימה: ${esc(signing.at)} UTC<br>${signing.verifiedAt ? "דוא״ל אומת בקוד חד-פעמי: " + esc(signing.verifiedAt) : "גישה באמצעות קישור פרטי; כתובת הדוא״ל לא אומתה בקוד."}<br>מזהה הסכם: <bdi>${esc(signing.id)}</bdi></div><div class="digest">Agreement SHA-256: ${agreementDigest(s, q)}<br>Evidence SHA-256: ${esc(signing.evidenceDigest)}</div></section>` : `<section class="signature-box"><h2>השלב הבא: אישור וחתימה</h2><p>פרטי החותם והחתימה יתווספו לעותק הסופי. חתימה תתאפשר לאחר עיון במסמך ואישור נפרד של ההסכם ושל הודעת הפרטיות.</p></section>`}
 <div class="document-footer"><span>Luxury Tech · הצעה אישית והסכם שירות</span><span>גרסה ${esc(s.version)}</span></div><div class="digest">Snapshot SHA-256: ${esc(s.digest)}</div></main></article></body></html>`;

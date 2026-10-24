@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Snapshot, Offer } from "./types";
 import { api, Notice, QuoteCard, Field } from "./shared";
 import OfferSelection from "./OfferSelection";
+import ProjectScope from "./ProjectScope";
 
 export default function OfferPreview({ offerId }: { offerId: string }) {
   const router = useRouter();
@@ -80,6 +81,7 @@ export default function OfferPreview({ offerId }: { offerId: string }) {
       <div className="lt-two-col">
         <section className="lt-card">
           <h2>מה כלול במסלול {tier.name}?</h2>
+          <ProjectScope snapshot={snapshot} tier={selection.tier} />
           <ul>
             {tier.features.map((f, i) => (
               <li key={i}>{f}</li>
