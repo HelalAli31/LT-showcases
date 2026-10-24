@@ -1,4 +1,4 @@
-﻿import { test } from "node:test";
+import { test } from "node:test";
 import assert from "node:assert/strict";
 import supertest from "supertest";
 import {
@@ -31,7 +31,7 @@ test("complete secured offer, immutable pricing, idempotent signing, private PDF
   const o = await publish(f);
   assert.equal(o.snapshot.quotes.find((q) => q.months === 24).total, 1002840);
   await t.test("OTP and private access", async () => {
-    assert.equal((await f.customer.get("/api/offers/" + o.token)).status, 401);
+    assert.equal((await f.customer.get("/api/offers/" + o.token)).status, 200);
     assert.equal(
       (
         await post(f.customer, `offers/${o.token}/otp`, {
@@ -166,7 +166,7 @@ test("complete secured offer, immutable pricing, idempotent signing, private PDF
     },
   );
   await t.test(
-    "cross-customer access denied and renewed access uses fresh OTP",
+    "raw contract access remains isolated; legacy recovery uses fresh OTP",
     async () => {
       const other = await publish(f, {
         ...input(),
@@ -174,7 +174,7 @@ test("complete secured offer, immutable pricing, idempotent signing, private PDF
       });
       const agent = supertest.agent(f.app);
       await verify(f, other, agent, "other@example.test");
-      assert.equal((await agent.get("/api/offers/" + o.token)).status, 403);
+      assert.equal((await agent.get("/api/offers/" + o.token)).status, 200);
       assert.equal(
         (await agent.get(`/api/customer/contracts/${contractId}/pdf`)).status,
         404,
@@ -235,15 +235,13 @@ test("complete secured offer, immutable pricing, idempotent signing, private PDF
         },
       ],
     };
-    await f.db
-      .collection("jobs")
-      .insertOne({
-        _id: "webhook-job",
-        key: "webhook-job",
-        providerId: "wa-test-id",
-        channel: "whatsapp",
-        status: "accepted",
-      });
+    await f.db.collection("jobs").insertOne({
+      _id: "webhook-job",
+      key: "webhook-job",
+      providerId: "wa-test-id",
+      channel: "whatsapp",
+      status: "accepted",
+    });
     assert.equal(
       (await supertest(f.app).post("/api/webhooks/whatsapp").send(body)).status,
       401,

@@ -1,6 +1,6 @@
-﻿# Luxury Tech
+# Luxury Tech
 
-Next.js public website plus private offers, configurable commitment pricing and verified-email digital agreement signing.
+Next.js public website plus private offers, configurable commitment pricing and private-link digital agreement signing without customer login or email codes.
 
 - `npm ci`
 - `npm run dev` (port 8080)

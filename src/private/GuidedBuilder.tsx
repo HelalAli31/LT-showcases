@@ -239,7 +239,7 @@ export default function GuidedBuilder({
                   onChange={(e) => change("clientLabel", e.target.value)}
                 />
               </Field>
-              <Field label="דוא״ל הנמען (נדרש לאימות)">
+              <Field label="דוא״ל הנמען (לקבלת עותק)">
                 <input
                   required
                   type="email"

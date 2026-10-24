@@ -1,4 +1,4 @@
-﻿import assert from "node:assert/strict";
+import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { SMTPServer } from "smtp-server";
@@ -49,6 +49,8 @@ const child = spawn(
       SMTP_HOST: "127.0.0.1",
       SMTP_PORT: "2526",
       SMTP_SECURE: "false",
+      MAIL_USER: "",
+      MAIL_PASS: "",
       META_SEND_ENABLED: "false",
       BINDING_SIGNATURES_ENABLED: "false",
       NODE_ENV: "production",
@@ -191,18 +193,17 @@ try {
   customer.on("pageerror", (e) => errors.push(e.message));
   await customer.goto(link);
   await customer
-    .getByLabel("דוא״ל", { exact: true })
-    .fill("client@example.test");
-  await customer.getByRole("button", { name: "שליחת קוד אימות" }).click();
-  await customer.getByLabel("קוד חד־פעמי").waitFor();
-  assert.ok(mailbox.length > 0, "SMTP message missing");
-  const code = mailbox.at(-1).match(/\b\d{6}\b/)?.[0];
-  assert.ok(code, "OTP missing from test SMTP email");
-  await customer.getByLabel("קוד חד־פעמי").fill(code);
-  await customer.getByRole("button", { name: "אימות וכניסה" }).click();
-  await customer
     .getByRole("heading", { name: "חנויות מסחר אלקטרוני עבור לקוח QA" })
     .waitFor();
+  assert.equal(
+    await customer.getByRole("button", { name: "שליחת קוד אימות" }).count(),
+    0,
+  );
+  assert.equal(
+    mailbox.length,
+    0,
+    "Opening a private offer must not send an OTP",
+  );
   await customer
     .getByLabel("תקופת התחייבות", { exact: true })
     .selectOption("24");
@@ -278,7 +279,7 @@ try {
   });
   assert.deepEqual(errors, [], "Browser JavaScript errors");
   console.log(
-    "Browser E2E passed: public site, admin builder/publication, real test SMTP OTP, mobile exact pricing, full agreement, canvas signing, encrypted PDF download and contract dashboard.",
+    "Browser E2E passed: public site, admin builder/publication, private-link access without SMTP or OTP, mobile exact pricing, full agreement, canvas signing, encrypted PDF download and contract dashboard.",
   );
 } catch (e) {
   if (browser) {

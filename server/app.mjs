@@ -166,6 +166,27 @@ export function createApi({
       "אין הרשאה להצעה",
       403,
     );
+  // The unguessable private link is the customer's access credential.
+  // It does not prove ownership of the recipient's email address.
+  const offerAccess = asyncRoute(async (req, res, next) => {
+    const o = await byToken(req.params.token);
+    if (!o.contractId) assertOpen(o);
+    const prior = req.cookies.lt_customer
+      ? await db.collection("sessions").findOne({
+          _id: hash(req.cookies.lt_customer),
+          kind: "customer",
+          offerId: o._id,
+          email: o.input.recipientEmail,
+          expires: { $gt: new Date() },
+        })
+      : null;
+    req.customer = prior || {
+      offerId: o._id,
+      email: o.input.recipientEmail,
+      accessMethod: "offer_link",
+    };
+    next();
+  });
   app.get(
     "/api/health",
     asyncRoute(async (req, res) => {
@@ -733,7 +754,7 @@ export function createApi({
     asyncRoute(async (req, res) => {
       const o = await byToken(req.params.token);
       if (!o.contractId) assertOpen(o);
-      res.json({ requiresVerification: true });
+      res.json({ requiresVerification: false });
     }),
   );
   async function challenge(req, res, o) {
@@ -855,8 +876,30 @@ export function createApi({
     }),
   );
   app.get(
+    "/api/offers/:token/contract",
+    offerAccess,
+    asyncRoute(async (req, res) => {
+      const c = await db
+        .collection("contracts")
+        .findOne(
+          { offerId: req.customer.offerId },
+          { projection: { payload: 0, artifact: 0, idempotencyKey: 0 } },
+        );
+      requireValue(c, "המסמך אינו זמין", 404);
+      verifyEvidence(c);
+      res.json({ ...c, evidenceMac: undefined });
+    }),
+  );
+  app.get(
+    "/api/offers/:token/contract/pdf",
+    offerAccess,
+    asyncRoute(async (req, res) =>
+      download(req, res, { offerId: req.customer.offerId }),
+    ),
+  );
+  app.get(
     "/api/offers/:token",
-    customer,
+    offerAccess,
     asyncRoute(async (req, res) => {
       const o = await byToken(req.params.token);
       owned(req, o);
@@ -884,7 +927,7 @@ export function createApi({
   );
   app.get(
     "/api/offers/:token/agreement",
-    customer,
+    offerAccess,
     asyncRoute(async (req, res) => {
       const o = await byToken(req.params.token);
       owned(req, o);
@@ -898,7 +941,7 @@ export function createApi({
   );
   app.get(
     "/api/offers/:token/attachments/:id",
-    customer,
+    offerAccess,
     asyncRoute(async (req, res) => {
       const o = await byToken(req.params.token);
       owned(req, o);
@@ -921,7 +964,7 @@ export function createApi({
   );
   app.post(
     "/api/offers/:token/sign",
-    customer,
+    offerAccess,
     asyncRoute(async (req, res) => {
       await limit(req, "sign:" + req.customer.offerId, 5, 10 * 60000);
       const o = await byToken(req.params.token);
@@ -991,8 +1034,11 @@ export function createApi({
         snapshotDigest: s.digest,
         agreementDigest: data.agreementDigest,
         at,
-        verifiedAt: req.customer.verifiedAt.toISOString(),
-        verifiedEmail: req.customer.email,
+        accessMethod: req.customer.verifiedAt ? "email_otp" : "offer_link",
+        emailVerified: !!req.customer.verifiedAt,
+        recipientEmail: req.customer.email,
+        verifiedAt: req.customer.verifiedAt?.toISOString() || null,
+        verifiedEmail: req.customer.verifiedAt ? req.customer.email : null,
         ipHash: hash(req.ip),
         userAgentHash: hash(req.headers["user-agent"] || ""),
         consents: {
@@ -1015,6 +1061,7 @@ export function createApi({
         id: contractId,
         at,
         verifiedAt: evidence.verifiedAt,
+        accessMethod: evidence.accessMethod,
         email: req.customer.email,
         signer: data,
         evidenceDigest,

@@ -111,7 +111,7 @@ export default function Customer() {
       const d = await api(base);
       setVerified(true);
       if (d.contractId) {
-        setContract(await api("customer/contracts/" + d.contractId));
+        setContract(await api(base + "/contract"));
         return;
       }
       setData(d);
@@ -157,7 +157,7 @@ export default function Customer() {
     setError("");
     key.current ||= crypto.randomUUID();
     try {
-      const r = await api(base + "/sign", "POST", {
+      await api(base + "/sign", "POST", {
         ...signer,
         signature,
         tier,
@@ -165,7 +165,7 @@ export default function Customer() {
         agreementDigest: agreement.digest,
         idempotencyKey: key.current,
       });
-      setContract(await api("customer/contracts/" + r.contractId));
+      setContract(await api(base + "/contract"));
       setConfirm(false);
     } catch (e) {
       setError((e as Error).message);
@@ -197,13 +197,21 @@ export default function Customer() {
           )}
           <a
             className="lt-button"
-            href={`/api/customer/contracts/${contract._id}/pdf`}
+            href={
+              contractAccess
+                ? `/api/customer/contracts/${contract._id}/pdf`
+                : `/api/${base}/contract/pdf`
+            }
           >
             הורדת העתק ההסכם
           </a>
         </section>
       ) : !verified ? (
-        <Otp base={base} onVerified={load} />
+        contractAccess ? (
+          <Otp base={base} onVerified={load} />
+        ) : (
+          <Notice>טוען את ההצעה שלך…</Notice>
+        )
       ) : !s ? (
         <Notice>טוען הצעה…</Notice>
       ) : (

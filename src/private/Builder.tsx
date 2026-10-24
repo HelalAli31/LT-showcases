@@ -166,7 +166,7 @@ export default function Builder({
                 className="lt-button secondary"
                 target="_blank"
                 rel="noreferrer"
-                href={`https://wa.me/?text=${encodeURIComponent("היי, הכנו עבורך הצעה אישית מ־Luxury Tech. לגישה מאובטחת ואימות דוא״ל: " + link)}`}
+                href={`https://wa.me/?text=${encodeURIComponent("היי, הכנו עבורך הצעה אישית מ־Luxury Tech. לצפייה וחתימה: " + link)}`}
               >
                 הודעה מוכנה ל־WhatsApp
               </a>
@@ -233,7 +233,7 @@ export default function Builder({
                 onChange={(e) => set("clientLabel", e.target.value)}
               />
             </Field>
-            <Field label="דוא״ל הנמען (נדרש לאימות)">
+            <Field label="דוא״ל הנמען (לקבלת עותק)">
               <input
                 required
                 type="email"

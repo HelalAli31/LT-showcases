@@ -1,5 +1,6 @@
 ﻿import { id, digest } from "./security.mjs";
 import { whatsappConfigured } from "./meta.mjs";
+import { unseal } from "./security.mjs";
 export async function audit(db, actor, action, subject, detail = {}, session) {
   const record = { _id: id(), actor, action, subject, detail, at: new Date() };
   record.digest = digest(record);
@@ -60,9 +61,20 @@ export async function processJobs(db, providers, config, max = 10) {
       const label = job.mode === "test" ? "מסמך בדיקה" : "הסכם";
       let providerId;
       if (job.channel === "email") {
+        let customerUrl = `${origin}/contract-access/${job.contractId}`;
+        if (job.kind === "customer") {
+          const contract = await db
+            .collection("contracts")
+            .findOne({ _id: job.contractId });
+          const offer =
+            contract &&
+            (await db.collection("offers").findOne({ _id: contract.offerId }));
+          if (offer?.tokenSecret)
+            customerUrl = `${origin}/offer/${unseal(offer.tokenSecret, config)}`;
+        }
         const text =
           job.kind === "customer"
-            ? `${label} נשמר בהצלחה. להורדת העתק מאומת יש להיכנס ולאמת דוא״ל: ${origin}/contract-access/${job.contractId}`
+            ? `${label} נשמר בהצלחה. לצפייה ולהורדת העתק יש לפתוח את הקישור הפרטי: ${customerUrl}`
             : `נחתם ${label} ${job.contractId}. לצפייה מאובטחת: ${origin}/admin/contracts`;
         providerId = await providers.email({
           to: job.recipient,
