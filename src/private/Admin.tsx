@@ -1,3 +1,4 @@
+import PriceRounding from "./PriceRounding";
 import type {
   Settings as SettingsData,
   Product,
@@ -386,11 +387,23 @@ function Pricing() {
           {edit.tiers.map((t, i) => (
             <div key={t.name}>
               <h3>{t.name}</h3>
+              <PriceRounding
+                setup={t.setup}
+                monthly={t.monthly}
+                onChange={(setup, monthly) =>
+                  setEdit({
+                    ...edit,
+                    tiers: edit.tiers.map((tier, j) =>
+                      i === j ? { ...tier, setup, monthly } : tier,
+                    ),
+                  })
+                }
+              />
               <Field label="הקמה ₪">
                 <input
                   type="number"
-                  min="0.01"
-                  step="0.01"
+                  min="1"
+                  step="1"
                   value={t.setup / 100}
                   onChange={(e) =>
                     setEdit({
@@ -410,8 +423,8 @@ function Pricing() {
               <Field label="חודשי ₪">
                 <input
                   type="number"
-                  min="0.01"
-                  step="0.01"
+                  min="1"
+                  step="1"
                   value={t.monthly / 100}
                   onChange={(e) =>
                     setEdit({

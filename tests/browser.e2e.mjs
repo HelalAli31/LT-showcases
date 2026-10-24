@@ -136,7 +136,19 @@ try {
   await page
     .getByLabel("דרישות מיוחדות ודברים שחשוב לכלול")
     .fill("חיבור למלאי קיים לאחר קבלת גישת API");
-  await page.getByLabel("דמי הקמה PRO ₪").fill("2490.00");
+  await page.getByLabel("מחיר חודשי PRO ₪").fill("156");
+  assert.equal(
+    await page.getByLabel("מחיר חודשי PRO ₪").getAttribute("step"),
+    "1",
+  );
+  await page
+    .locator(".lt-tier-editor")
+    .filter({ has: page.getByText("PRO", { exact: true }) })
+    .getByRole("button", { name: /עיגול מחירים/ })
+    .click();
+  assert.equal(await page.getByLabel("מחיר חודשי PRO ₪").inputValue(), "159");
+  assert.equal(await page.getByLabel("דמי הקמה PRO ₪").inputValue(), "2499");
+  await page.getByLabel("דמי הקמה PRO ₪").fill("2490");
   await page
     .getByRole("button", { name: "הוספת עמוד / מסך", exact: true })
     .click();
@@ -162,6 +174,14 @@ try {
     .getByLabel("עיצוב וחוויית שימוש", { exact: true })
     .fill("עיצוב מותאם למיתוג העסק ולמובייל");
   await page.getByLabel("מחיר חודשי PRO ₪").fill("349.00");
+  await page
+    .getByRole("button", { name: "הוספת מסכי ניהול לפי מסלול", exact: true })
+    .click();
+  assert.equal(await page.locator(".lt-page-editor").count(), 10);
+  await page
+    .getByRole("button", { name: "הוספת מסכי ניהול לפי מסלול", exact: true })
+    .click();
+  assert.equal(await page.locator(".lt-page-editor").count(), 10);
   for (const tier of ["STARTER", "CUSTOM"]) {
     await page
       .locator(".lt-tier-editor")
@@ -237,6 +257,20 @@ try {
   await interactivePreview
     .getByRole("radio", { name: "24 חודשים", exact: true })
     .check();
+  assert.equal(
+    await interactivePreview
+      .locator(".lt-project-scope")
+      .getByRole("heading", { name: "ניהול מוצרים", exact: true })
+      .count(),
+    1,
+  );
+  assert.equal(
+    await interactivePreview
+      .locator(".lt-project-scope")
+      .getByRole("heading", { name: "ניהול קופונים", exact: true })
+      .count(),
+    0,
+  );
   assert.ok(
     (await interactivePreview.locator(".lt-quote").innerText()).includes(
       "4,208.40",
@@ -257,6 +291,13 @@ try {
   await interactivePreview
     .getByRole("button", { name: "בחירת מסלול CUSTOM", exact: true })
     .click();
+  assert.equal(
+    await interactivePreview
+      .locator(".lt-project-scope")
+      .getByRole("heading", { name: "ניהול קופונים", exact: true })
+      .count(),
+    1,
+  );
   assert.ok(
     (await interactivePreview.locator(".lt-price").innerText()).includes(
       "359.10",

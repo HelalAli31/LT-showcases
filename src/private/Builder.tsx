@@ -1,3 +1,4 @@
+import PriceRounding from "./PriceRounding";
 import OfferSelection from "./OfferSelection";
 import ProjectScope, {
   ProjectScopeEditor,
@@ -352,9 +353,9 @@ export default function Builder({
                         <input
                           required
                           type="number"
-                          min="0.01"
+                          min="1"
                           max="1000000"
-                          step="0.01"
+                          step="1"
                           value={active.setup / 100}
                           onChange={(e) =>
                             tierUpdate(
@@ -369,9 +370,9 @@ export default function Builder({
                         <input
                           required
                           type="number"
-                          min="0.01"
+                          min="1"
                           max="1000000"
-                          step="0.01"
+                          step="1"
                           value={active.monthly / 100}
                           onChange={(e) =>
                             tierUpdate(
@@ -383,6 +384,20 @@ export default function Builder({
                         />
                       </Field>
                     </div>
+                    <PriceRounding
+                      setup={active.setup}
+                      monthly={active.monthly}
+                      onChange={(setup, monthly) =>
+                        set(
+                          "tiers",
+                          form.tiers.map((tier) =>
+                            tier.name === t.name
+                              ? { ...tier, setup, monthly }
+                              : tier,
+                          ),
+                        )
+                      }
+                    />
                     <DiscountRules
                       value={active.rules}
                       onChange={(v) => tierUpdate(t.name, "rules", v)}

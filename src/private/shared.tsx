@@ -9,9 +9,12 @@ import {
   ReactElement,
 } from "react";
 export const money = (n: number) =>
-  new Intl.NumberFormat("he-IL", { style: "currency", currency: "ILS" }).format(
-    n / 100,
-  );
+  new Intl.NumberFormat("he-IL", {
+    style: "currency",
+    currency: "ILS",
+    minimumFractionDigits: n % 100 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(n / 100);
 export async function api(path: string, method = "GET", data?: unknown) {
   const response = await fetch("/api/" + path, {
     method,

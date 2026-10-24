@@ -1,3 +1,4 @@
+import PriceRounding from "./PriceRounding";
 import OfferSelection from "./OfferSelection";
 import ProjectScope, {
   ProjectScopeEditor,
@@ -378,10 +379,10 @@ export default function GuidedBuilder({
                             <input
                               required
                               type="number"
-                              min="0.01"
+                              min="1"
                               max="1000000"
-                              step="0.01"
-                              defaultValue={active.setup / 100}
+                              step="1"
+                              value={active.setup / 100}
                               onChange={(e) =>
                                 updateTier(
                                   t.name,
@@ -395,10 +396,10 @@ export default function GuidedBuilder({
                             <input
                               required
                               type="number"
-                              min="0.01"
+                              min="1"
                               max="1000000"
-                              step="0.01"
-                              defaultValue={active.monthly / 100}
+                              step="1"
+                              value={active.monthly / 100}
                               onChange={(e) =>
                                 updateTier(
                                   t.name,
@@ -409,6 +410,14 @@ export default function GuidedBuilder({
                             />
                           </Field>
                         </div>
+                        <PriceRounding
+                          setup={active.setup}
+                          monthly={active.monthly}
+                          onChange={(setup, monthly) => {
+                            updateTier(t.name, "setup", setup);
+                            updateTier(t.name, "monthly", monthly);
+                          }}
+                        />
                         <ul className="lt-package-features">
                           {active.features.map((f, i) => (
                             <li key={i}>{f}</li>

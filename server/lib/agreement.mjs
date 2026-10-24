@@ -10,9 +10,12 @@ const esc = (s) =>
       ],
   );
 const money = (n) =>
-  new Intl.NumberFormat("he-IL", { style: "currency", currency: "ILS" }).format(
-    n / 100,
-  );
+  new Intl.NumberFormat("he-IL", {
+    style: "currency",
+    currency: "ILS",
+    minimumFractionDigits: n % 100 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(n / 100);
 let resources;
 export async function renderAgreement(s, q, signing) {
   resources ??= Promise.all([

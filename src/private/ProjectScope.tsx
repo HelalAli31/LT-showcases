@@ -53,6 +53,60 @@ const presets = {
     ["דוחות", "/reports", "תצוגת הדוחות והנתונים שהוגדרו באפיון המאושר."],
   ],
 };
+const adminPresets: ProjectPage[] = [
+  {
+    name: "ניהול מוצרים",
+    path: "/admin/products",
+    description:
+      "הוספה ועריכה של מוצרים, מחירים, תמונות ותיאורים; היקף המוצרים בהתאם למגבלות המסלול.",
+    tiers: [],
+  },
+  {
+    name: "ניהול קטגוריות",
+    path: "/admin/categories",
+    description: "יצירה ועריכה של קטגוריות ושיוך מוצרים לקטגוריות בחנות.",
+    tiers: [],
+  },
+  {
+    name: "ניהול הזמנות",
+    path: "/admin/orders",
+    description:
+      "רשימת הזמנות, צפייה בפריטים ובפרטי הלקוח ועדכון סטטוס טיפול בהזמנה.",
+    tiers: [],
+  },
+  {
+    name: "ניהול מלאי",
+    path: "/admin/inventory",
+    description: "עדכון כמויות מלאי וזמינות מוצרים בהתאם לתכולת המסלול.",
+    tiers: [],
+  },
+  {
+    name: "ניהול לקוחות",
+    path: "/admin/customers",
+    description: "רשימת לקוחות, פרטי קשר והיסטוריית הזמנות מתוך החנות.",
+    tiers: ["PRO", "CUSTOM"],
+  },
+  {
+    name: "ניהול קופונים",
+    path: "/admin/coupons",
+    description:
+      "יצירה וניהול של קודי הנחה, תנאי שימוש ותוקף בהתאם לאפיון המאושר.",
+    tiers: ["PRO", "CUSTOM"],
+  },
+  {
+    name: "דוחות מכירות",
+    path: "/admin/reports",
+    description: "סיכומי הזמנות ומכירות לפי תקופה והצגת הנתונים שנכללו באפיון.",
+    tiers: ["PRO", "CUSTOM"],
+  },
+  {
+    name: "משתמשים והרשאות",
+    path: "/admin/users",
+    description:
+      "ניהול גישת צוות לממשק הניהול והגדרת הרשאות לפי האפיון המאושר.",
+    tiers: ["PRO", "CUSTOM"],
+  },
+];
 export function ProjectScopeEditor({
   pages = [],
   details = emptyProjectDetails,
@@ -77,6 +131,25 @@ export function ProjectScopeEditor({
         ל-STARTER, PRO ו-CUSTOM.
       </p>
       <div className="lt-actions">
+        <button
+          type="button"
+          className="secondary"
+          disabled={pages.length >= 50}
+          onClick={() =>
+            onChange(
+              [
+                ...pages,
+                ...adminPresets.filter(
+                  (a) =>
+                    !pages.some((p) => p.path === a.path || p.name === a.name),
+                ),
+              ].slice(0, 50),
+              details,
+            )
+          }
+        >
+          הוספת מסכי ניהול לפי מסלול
+        </button>
         <button
           type="button"
           className="secondary"
