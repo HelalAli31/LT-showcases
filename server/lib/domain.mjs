@@ -84,6 +84,7 @@ export const signerSchema = z
     tier: z.enum(["STARTER", "PRO", "CUSTOM"]),
     months: z.number().int(),
     agreementDigest: z.string().regex(/^[a-f0-9]{64}$/),
+    mode: z.enum(["production", "test"]).optional(),
     idempotencyKey: z.string().regex(/^[a-zA-Z0-9-]{16,100}$/),
   })
   .strict()

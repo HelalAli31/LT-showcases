@@ -357,16 +357,14 @@ export function createApi({
         });
       } catch (error) {
         // Fixed synthetic HTML only; this admin-only endpoint never renders customer input.
-        res
-          .status(503)
-          .json({
-            ready: false,
-            code: error.code,
-            runtimeError: String(error.cause?.message || error.message).slice(
-              0,
-              2500,
-            ),
-          });
+        res.status(503).json({
+          ready: false,
+          code: error.code,
+          runtimeError: String(error.cause?.message || error.message).slice(
+            0,
+            2500,
+          ),
+        });
       }
     }),
   );
@@ -1003,6 +1001,7 @@ export function createApi({
       res.json({
         html: await renderAgreement(o.snapshot, q),
         digest: agreementDigest(o.snapshot, q),
+        mode: bindingEnabled(config, await settings()) ? "production" : "test",
       });
     }),
   );
@@ -1079,6 +1078,11 @@ export function createApi({
       );
       const settingsDoc = await settings(),
         production = bindingEnabled(config, settingsDoc);
+      requireValue(
+        (data.mode || "test") === (production ? "production" : "test"),
+        "מצב ההתקשרות עודכן. יש לרענן את ההצעה ולעיין בהסכם מחדש לפני חתימה.",
+        409,
+      );
       let legalApproval;
       if (production) {
         requireValue(

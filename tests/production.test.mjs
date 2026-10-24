@@ -40,6 +40,16 @@ test("admin activates production and English WhatsApp notifications without chan
   );
   const body = await signing(f.customer, o);
   assert.equal(
+    (
+      await post(f.customer, `offers/${o.token}/sign`, {
+        ...body,
+        mode: "test",
+      })
+    ).status,
+    409,
+  );
+  assert.equal(await f.db.collection("contracts").countDocuments(), 0);
+  assert.equal(
     (await post(f.customer, `offers/${o.token}/sign`, body)).status,
     403,
   );

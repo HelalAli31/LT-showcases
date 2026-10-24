@@ -287,6 +287,15 @@ test("PDF generation failure rolls back signing; production legal gate rejects u
   f.config.BINDING_SIGNATURES_ENABLED = "true";
   assert.equal(
     (await post(f.customer, `offers/${o.token}/sign`, data)).status,
+    409,
+  );
+  assert.equal(
+    (
+      await post(f.customer, `offers/${o.token}/sign`, {
+        ...data,
+        mode: "production",
+      })
+    ).status,
     403,
   );
 });

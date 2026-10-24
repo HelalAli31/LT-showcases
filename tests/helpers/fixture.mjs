@@ -105,7 +105,7 @@ export async function setup(options = {}) {
   if (login.status !== 200)
     throw Error("Login setup failed " + JSON.stringify(login.body));
   return {
-    uri:repl.getUri(),
+    uri: repl.getUri(),
     app,
     admin,
     customer,
@@ -204,6 +204,7 @@ export async function signing(customer, o, signature) {
     tier: "PRO",
     months: 24,
     agreementDigest: agreement.body.digest,
+    mode: agreement.body.mode,
     idempotencyKey: "test-idempotency-key-12345",
   };
 }

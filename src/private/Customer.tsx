@@ -77,7 +77,11 @@ export default function Customer() {
     [data, setData] = useState<OfferAccess>(),
     [tier, setTier] = useState(""),
     [months, setMonths] = useState(0),
-    [agreement, setAgreement] = useState<{ html: string; digest: string }>(),
+    [agreement, setAgreement] = useState<{
+      html: string;
+      digest: string;
+      mode: string;
+    }>(),
     [reviewed, setReviewed] = useState(false),
     [signature, setSignature] = useState(""),
     [error, setError] = useState(""),
@@ -143,9 +147,11 @@ export default function Customer() {
     setBusy(true);
     setError("");
     try {
-      setAgreement(
-        await api(`${base}/agreement?tier=${tier}&months=${months}`),
+      const result = await api(
+        `${base}/agreement?tier=${tier}&months=${months}`,
       );
+      setAgreement(result);
+      setData((d) => (d ? { ...d, mode: result.mode } : d));
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -163,6 +169,7 @@ export default function Customer() {
         tier,
         months,
         agreementDigest: agreement.digest,
+        mode: agreement.mode,
         idempotencyKey: key.current,
       });
       setContract(await api(base + "/contract"));
