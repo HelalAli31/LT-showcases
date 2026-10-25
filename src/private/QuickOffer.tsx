@@ -12,6 +12,15 @@ export default function QuickOffer() {
   const [url, setUrl] = useState("");
   const [copied, setCopied] = useState(false);
   useEffect(() => {
+    if (!url) return;
+    const frame = requestAnimationFrame(() => {
+      const result = document.getElementById("quick-offer-result");
+      result?.scrollIntoView({ block: "center" });
+      result?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [url]);
+  useEffect(() => {
     api("admin/offers/quick-defaults")
       .then((d) => setTax(d.tax))
       .catch((e) => setError(e.message));
@@ -19,11 +28,7 @@ export default function QuickOffer() {
   return (
     <section className="lt-card lt-quick-offer">
       <h2>הצעה מהירה — שם וקישור</h2>
-      <p>
-        STARTER ו-PRO לבחירת הלקוח, במחירי המחירון ובהנחות שהגדרתם. כולל עמודים,
-        מסכי ניהול והסכם ברירת מחדל. תוקף הקישור: 14 ימים. CUSTOM זמין בעורך
-        המלא באישור פרטני.
-      </p>
+      <p>שם הלקוח, לחיצה וקישור מוכן לשליחה.</p>
       {error && <Notice error>{error}</Notice>}
       {url ? (
         <>
@@ -33,6 +38,7 @@ export default function QuickOffer() {
           </Notice>
           <Field label="קישור ההצעה המהירה">
             <input
+              id="quick-offer-result"
               dir="ltr"
               readOnly
               value={url}

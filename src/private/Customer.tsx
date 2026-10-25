@@ -3,7 +3,7 @@ import ProjectScope from "./ProjectScope";
 import type { OfferAccess, Contract, RequestError } from "./types";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/router";
-import { api, Shell, Field, Notice, Otp, QuoteCard } from "./shared";
+import { api, Shell, Field, Notice, Otp, QuoteCard, money } from "./shared";
 function Signature({ onChange }: { onChange: (v: string) => void }) {
   const ref = useRef<HTMLCanvasElement>(null),
     drawing = useRef(false),
@@ -131,6 +131,22 @@ export default function Customer() {
     if (router.isReady) load();
   }, [router.isReady, load]);
   useEffect(() => {
+    if (agreement) {
+      const frame = requestAnimationFrame(() => {
+        document
+          .getElementById("agreement")
+          ?.scrollIntoView({ block: "start" });
+        document
+          .getElementById("agreement-heading")
+          ?.focus({ preventScroll: true });
+      });
+      return () => cancelAnimationFrame(frame);
+    }
+  }, [agreement]);
+  useEffect(() => {
+    if (contract) window.scrollTo({ top: 0 });
+  }, [contract]);
+  useEffect(() => {
     setAgreement(undefined);
     setReviewed(false);
     setSignature("");
@@ -227,8 +243,9 @@ export default function Customer() {
         <>
           <div className="lt-page-heading">
             <p className="lt-eyebrow">הצעה שהוכנה עבורך</p>
-            <h1>{s.title}</h1>
-            <p>{s.description}</p>
+            <h1>המסלול שמתאים לעסק שלך</h1>
+            <p className="lt-customer-title">{s.title}</p>
+            <p>בוחרים מסלול ותקופה, בודקים את הסיכום וחותמים.</p>
           </div>
           {data.mode === "test" && (
             <Notice>סביבת בדיקה — חתימה כאן תפיק מסמך בדיקה בלבד.</Notice>
@@ -242,9 +259,18 @@ export default function Customer() {
               setMonths(v.months);
             }}
           />
-          <div className="lt-two-col">
+          <div className="lt-customer-summary">
+            <QuoteCard snapshot={s} quote={q} compact />
             <div>
-              <section className="lt-card">
+              <details className="lt-card lt-more-details">
+                <summary>מה כלול? עמודים, שירות ותנאים</summary>
+                <h2>מה כלול במסלול {tier}?</h2>
+                <ul>
+                  {p.features.map((feature, i) => (
+                    <li key={i}>{feature}</li>
+                  ))}
+                </ul>
+                <p>{p.limits}</p>
                 <ProjectScope snapshot={s} tier={tier} />
                 <h2>היקף העבודה</h2>
                 <p className="lt-pre">{s.scope}</p>
@@ -280,16 +306,29 @@ export default function Customer() {
                     ))}
                   </>
                 )}
-                <button disabled={busy} onClick={review}>
-                  {busy ? "טוען…" : "עיון בהסכם המלא והמשך לחתימה"}
-                </button>
-              </section>
+              </details>
             </div>
-            <QuoteCard snapshot={s} quote={q} />
           </div>
+          {!agreement && (
+            <div className="lt-customer-next">
+              <span>
+                <strong>{money(q.monthly)}</strong> לחודש · {tier} · {months}{" "}
+                חודשים
+              </span>
+              <button
+                disabled={busy}
+                onClick={review}
+                aria-label="עיון בהסכם המלא והמשך לחתימה"
+              >
+                {busy ? "טוען…" : "להסכם ולחתימה ←"}
+              </button>
+            </div>
+          )}
           {agreement && (
             <section className="lt-card" id="agreement">
-              <h2>ההסכם המלא</h2>
+              <h2 id="agreement-heading" tabIndex={-1}>
+                3. בדיקה וחתימה
+              </h2>
               <iframe
                 className="lt-agreement"
                 title="ההסכם המלא"

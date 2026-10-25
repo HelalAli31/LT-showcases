@@ -1,4 +1,5 @@
 import { useId } from "react";
+import type { CSSProperties } from "react";
 import type { Snapshot } from "./types";
 import { money } from "./shared";
 
@@ -17,12 +18,12 @@ export default function OfferSelection({
   const current = snapshot.tiers.find((t) => t.name === tier);
   return (
     <div className="lt-offer-selection">
-      <h2>בחירת מסלול</h2>
-      <p>
-        כל המסלולים המוצגים זמינים לבחירת הלקוח. בוחרים מסלול אחד ותקופת
-        התחייבות.
-      </p>
-      <div className="lt-tier-grid" aria-label="מסלולים לבחירת הלקוח">
+      <h2>1. בוחרים מסלול</h2>
+      <div
+        className="lt-tier-grid"
+        aria-label="מסלולים לבחירת הלקוח"
+        style={{ "--tier-count": snapshot.tiers.length } as CSSProperties}
+      >
         {snapshot.tiers.map((t) => (
           <button
             type="button"
@@ -44,24 +45,19 @@ export default function OfferSelection({
             </span>
             <h2>{t.name}</h2>
             <div className="lt-tier-base-price">
-              <strong>{money(t.monthly)}</strong> / חודש לפני הנחת התחייבות
+              <strong>{money(t.monthly)}</strong> / חודש לפני הנחה
             </div>
             <p>הקמה חד-פעמית: {money(t.setup)}</p>
             <ul>
-              {t.features.map((f, i) => (
+              {t.features.slice(0, 3).map((f, i) => (
                 <li key={i}>{f}</li>
               ))}
             </ul>
-            {t.limits && <p>{t.limits}</p>}
           </button>
         ))}
       </div>
       <fieldset className="lt-commitment">
-        <legend>תקופת התחייבות</legend>
-        <p>
-          המחירים לתקופות הזמינות במסלול {tier}. שינוי הבחירה מעדכן את ההצעה ואת
-          ההסכם.
-        </p>
+        <legend>2. בוחרים תקופת התחייבות</legend>
         <div className="lt-commitment-options">
           {current?.rules.map((r) => {
             const q = snapshot.quotes.find(

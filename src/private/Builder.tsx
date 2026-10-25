@@ -74,6 +74,15 @@ export default function Builder({
     [message, setMessage] = useState(""),
     [link, setLink] = useState("");
   useEffect(() => {
+    if (!link) return;
+    const frame = requestAnimationFrame(() => {
+      const field = document.getElementById("published-offer-link");
+      field?.scrollIntoView({ block: "center" });
+      field?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [link]);
+  useEffect(() => {
     api("admin/catalog")
       .then(setCatalog)
       .catch((e) => setError(e.message));
@@ -168,7 +177,12 @@ export default function Builder({
           {link && (
             <>
               <Field label="קישור ללקוח — בחירת מסלול וחתימה">
-                <input readOnly value={link} dir="ltr" />
+                <input
+                  id="published-offer-link"
+                  readOnly
+                  value={link}
+                  dir="ltr"
+                />
               </Field>
               <button
                 onClick={() =>

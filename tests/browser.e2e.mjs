@@ -349,7 +349,7 @@ try {
   customer.on("pageerror", (e) => errors.push(e.message));
   await customer.goto(link);
   await customer
-    .getByRole("heading", { name: "חנויות מסחר אלקטרוני עבור לקוח QA" })
+    .getByRole("heading", { name: "המסלול שמתאים לעסק שלך" })
     .waitFor();
   assert.equal(
     await customer.getByRole("button", { name: "שליחת קוד אימות" }).count(),
@@ -361,6 +361,34 @@ try {
     "Opening a private offer must not send an OTP",
   );
   assert.equal(await customer.getByRole("radio").count(), 3);
+  const tierBounds = await customer
+    .locator(".lt-tier-grid .lt-tier")
+    .evaluateAll((elements) =>
+      elements.map((el) => el.getBoundingClientRect().top),
+    );
+  assert.ok(
+    tierBounds.every((top) => Math.abs(top - tierBounds[0]) < 2),
+    "All packages must stay side by side on mobile",
+  );
+  const durationBounds = await customer
+    .locator(".lt-commitment-option")
+    .evaluateAll((elements) =>
+      elements.map((el) => el.getBoundingClientRect().top),
+    );
+  assert.ok(
+    durationBounds.every((top) => Math.abs(top - durationBounds[0]) < 2),
+    "Commitment choices must stay in one row on mobile",
+  );
+  await customer.evaluate(() => window.scrollTo(0, 0));
+  const nextBounds = await customer.locator(".lt-customer-next").boundingBox();
+  assert.ok(
+    nextBounds.y >= 0 && nextBounds.y + nextBounds.height <= 844,
+    "Continue must be visible without scrolling",
+  );
+  assert.equal(
+    await customer.locator(".lt-more-details").getAttribute("open"),
+    null,
+  );
   for (const tier of ["STARTER", "PRO", "CUSTOM"]) {
     assert.equal(
       await customer
@@ -420,6 +448,9 @@ try {
     .getByRole("button", { name: "עיון בהסכם המלא והמשך לחתימה" })
     .click();
   await customer.locator("iframe").waitFor();
+  await customer.waitForFunction(
+    () => document.activeElement?.id === "agreement-heading",
+  );
   await customer
     .getByRole("checkbox", { name: "קראתי את ההסכם המלא ואת נספחי ההצעה" })
     .check();
@@ -511,6 +542,14 @@ try {
     .click();
   const quickLink = quickPage.getByLabel("קישור ההצעה המהירה", { exact: true });
   await quickLink.waitFor();
+  await quickPage.waitForFunction(
+    () => document.activeElement?.id === "quick-offer-result",
+  );
+  const linkBounds = await quickLink.boundingBox();
+  assert.ok(
+    linkBounds.y >= 0 && linkBounds.y + linkBounds.height <= 1000,
+    "Created link must be brought into view",
+  );
   const quickCustomer = await browser.newPage();
   await quickCustomer.goto(await quickLink.inputValue());
   await quickCustomer
@@ -525,6 +564,7 @@ try {
       .count(),
     0,
   );
+  await quickCustomer.locator(".lt-more-details > summary").click();
   assert.equal(
     await quickCustomer
       .locator(".lt-project-scope")

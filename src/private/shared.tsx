@@ -223,12 +223,17 @@ export function DiscountRules({
 export function QuoteCard({
   snapshot: s,
   quote: q,
+  compact = false,
 }: {
   snapshot: Snapshot;
   quote: Quote;
+  compact?: boolean;
 }) {
   return (
-    <section className="lt-card lt-quote" aria-live="polite">
+    <section
+      className={`lt-card lt-quote ${compact ? "lt-quote-compact" : ""}`}
+      aria-live="polite"
+    >
       <p className="lt-eyebrow">
         {q.tier} · {q.months} חודשי התחייבות
       </p>
@@ -253,12 +258,22 @@ export function QuoteCard({
           ["מס נוסף", q.tax],
           ["סך התחייבות לתקופה", q.total],
           ["חיסכון לתקופה לפני מס נוסף", q.savings],
-        ].map(([label, n]) => (
-          <div key={String(label)}>
-            <dt>{label}</dt>
-            <dd>{money(Number(n))}</dd>
-          </div>
-        ))}
+        ]
+          .filter(
+            ([, n], index) =>
+              !compact ||
+              (index === 1
+                ? Number(n) !== 0
+                : index === 2 || index === 3
+                  ? q.tax !== 0
+                  : true),
+          )
+          .map(([label, n]) => (
+            <div key={String(label)}>
+              <dt>{label}</dt>
+              <dd>{money(Number(n))}</dd>
+            </div>
+          ))}
       </dl>
       <p>
         {
@@ -278,9 +293,16 @@ export function QuoteCard({
           ? "ההנחה חלה גם על ההקמה."
           : "ההנחה חלה על החיוב החודשי בלבד."}
       </p>
-      <p>
-        <strong>בחידוש:</strong> {s.renewal}
-      </p>
+      {compact ? (
+        <details>
+          <summary>מה קורה בסיום התקופה?</summary>
+          <p>{s.renewal}</p>
+        </details>
+      ) : (
+        <p>
+          <strong>בחידוש:</strong> {s.renewal}
+        </p>
+      )}
     </section>
   );
 }
