@@ -22,6 +22,6 @@ for (let n = 1; n <= pdf.numPages; n++) {
 }
 await writeFile("private-data/qa/pdf-text.txt", allText);
 console.log("Rendered Hebrew signed test PDF:", pdf.numPages, "pages");
-for (const amount of ["314.10", "10,028.40", "837.60"])
+for (const amount of ["319", "10,155", "720"])
   if (!allText.includes(amount)) throw Error("PDF missing " + amount);
 await pdf.cleanup();

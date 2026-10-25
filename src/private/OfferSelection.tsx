@@ -2,6 +2,7 @@ import { useId } from "react";
 import type { CSSProperties } from "react";
 import type { Snapshot } from "./types";
 import { money } from "./shared";
+import { discountPercent } from "../../shared/price-display.mjs";
 
 export default function OfferSelection({
   snapshot,
@@ -77,9 +78,9 @@ export default function OfferSelection({
                 />
                 <strong>{r.months} חודשים</strong>
                 <span className="lt-commitment-discount">
-                  {r.bps ? `${r.bps / 100}% הנחה` : "ללא הנחה"}
+                  {q.discountBps ? `${discountPercent(q)} הנחה` : "ללא הנחה"}
                 </span>
-                {r.bps > 0 && <del>{money(q.originalMonthly)}</del>}
+                {q.discountBps > 0 && <del>{money(q.originalMonthly)}</del>}
                 <b>
                   {money(q.monthly)}
                   <small> / חודש</small>

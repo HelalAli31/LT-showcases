@@ -6,6 +6,7 @@ import { catalog, initialSettings } from "../server/lib/catalog.mjs";
 import { setup, post, publish, verify, signing } from "./helpers/fixture.mjs";
 import { renderAgreement } from "../server/lib/documents.mjs";
 const brief = () => ({
+  priceRounding: "exact",
   product: "ecommerce",
   clientLabel: "עסק בדיקה",
   recipientEmail: "client@example.test",

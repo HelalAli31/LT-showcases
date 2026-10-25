@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { api, Field, Notice, DiscountRules, QuoteCard, money } from "./shared";
 const blank = {
+  priceRounding: "ending9" as const,
   title: "",
   product: "ecommerce",
   recipientEmail: "",

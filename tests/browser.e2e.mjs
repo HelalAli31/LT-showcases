@@ -228,11 +228,11 @@ try {
     .getByRole("button", { name: "בחירת מסלול STARTER", exact: true })
     .click();
   await page.getByRole("radio", { name: "24 חודשים", exact: true }).check();
-  assert.ok((await page.locator(".lt-quote").innerText()).includes("4,208.40"));
+  assert.ok((await page.locator(".lt-quote").innerText()).includes("4,335"));
   await page
     .getByRole("button", { name: "בחירת מסלול CUSTOM", exact: true })
     .click();
-  assert.ok((await page.locator(".lt-price").innerText()).includes("359.10"));
+  assert.ok((await page.locator(".lt-price").innerText()).includes("369"));
   await page
     .getByRole("button", { name: "בחירת מסלול PRO", exact: true })
     .click();
@@ -274,7 +274,7 @@ try {
   );
   assert.ok(
     (await interactivePreview.locator(".lt-quote").innerText()).includes(
-      "4,208.40",
+      "4,335",
     ),
   );
   await interactivePreview
@@ -300,9 +300,7 @@ try {
     1,
   );
   assert.ok(
-    (await interactivePreview.locator(".lt-price").innerText()).includes(
-      "359.10",
-    ),
+    (await interactivePreview.locator(".lt-price").innerText()).includes("369"),
   );
   await interactivePreview.screenshot({
     path: "private-data/qa/interactive-customer-preview.png",
@@ -314,7 +312,7 @@ try {
   );
   await previewFrame.getByText("ההשקעה בפרויקט").waitFor();
   assert.ok(
-    (await previewFrame.locator("body").innerText()).includes("10,028.40"),
+    (await previewFrame.locator("body").innerText()).includes("10,155"),
   );
   assert.ok(
     (await previewFrame.locator("body").innerText()).includes(
@@ -410,14 +408,12 @@ try {
   );
   await customer.getByRole("radio", { name: "24 חודשים", exact: true }).check();
   assert.ok(
-    (await customer.locator(".lt-quote").innerText()).includes("4,208.40"),
+    (await customer.locator(".lt-quote").innerText()).includes("4,335"),
   );
   await customer
     .getByRole("button", { name: "בחירת מסלול CUSTOM", exact: true })
     .click();
-  assert.ok(
-    (await customer.locator(".lt-price").innerText()).includes("359.10"),
-  );
+  assert.ok((await customer.locator(".lt-price").innerText()).includes("369"));
   await customer
     .getByRole("button", { name: "בחירת מסלול PRO", exact: true })
     .click();
@@ -430,11 +426,9 @@ try {
   );
   await customer.getByRole("radio", { name: "24 חודשים", exact: true }).check();
   assert.ok(
-    (await customer.locator(".lt-quote").innerText()).includes("10,028.40"),
+    (await customer.locator(".lt-quote").innerText()).includes("10,155"),
   );
-  assert.ok(
-    (await customer.locator(".lt-price").innerText()).includes("314.10"),
-  );
+  assert.ok((await customer.locator(".lt-price").innerText()).includes("319"));
   assert.equal(
     await customer.evaluate(
       () => document.documentElement.scrollWidth > innerWidth,
@@ -508,8 +502,8 @@ try {
   assert.ok(
     unseal(contract.payload, f.config).html.includes("מורשה חתימה מטעם החברה"),
   );
-  assert.equal(contract.monthly, 31410);
-  assert.equal(contract.total, 1002840);
+  assert.equal(contract.monthly, 31900);
+  assert.equal(contract.total, 1015500);
   await customer.screenshot({
     path: "private-data/qa/signed-success.png",
     fullPage: true,

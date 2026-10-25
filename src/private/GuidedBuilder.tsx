@@ -1,4 +1,4 @@
-import PriceRounding from "./PriceRounding";
+import PriceRounding, { priceEndingIn9 } from "./PriceRounding";
 import QuickOffer from "./QuickOffer";
 import OfferSelection from "./OfferSelection";
 import ProjectScope, {
@@ -107,6 +107,7 @@ export default function GuidedBuilder({
           setDiscountSetup(input.discountSetup);
           setOfferRules(input.rules || settings.rules);
           setExtras({
+            priceRounding: input.priceRounding || "exact",
             addons: input.addons,
             attachments: input.attachments,
             internalNotes: input.internalNotes,
@@ -161,6 +162,7 @@ export default function GuidedBuilder({
       rules: offerRules,
       tax,
       discountSetup,
+      priceRounding: "ending9",
       pages,
       projectDetails,
       ...extras,
@@ -385,6 +387,14 @@ export default function GuidedBuilder({
                               max="1000000"
                               step="1"
                               value={active.setup / 100}
+                              onBlur={() => {
+                                if (!offerId)
+                                  updateTier(
+                                    t.name,
+                                    "setup",
+                                    priceEndingIn9(active.setup),
+                                  );
+                              }}
                               onChange={(e) =>
                                 updateTier(
                                   t.name,
@@ -402,6 +412,14 @@ export default function GuidedBuilder({
                               max="1000000"
                               step="1"
                               value={active.monthly / 100}
+                              onBlur={() => {
+                                if (!offerId)
+                                  updateTier(
+                                    t.name,
+                                    "monthly",
+                                    priceEndingIn9(active.monthly),
+                                  );
+                              }}
                               onChange={(e) =>
                                 updateTier(
                                   t.name,

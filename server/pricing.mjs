@@ -22,12 +22,26 @@ export function rules(value) {
 }
 const reduce = (amount, bps) =>
   Number((BigInt(amount) * BigInt(10000 - bps) + 5000n) / 10000n);
+// Monetary inputs and results remain integer agorot throughout.
+export const ending9 = (amount) =>
+  amount === 0 ? 0 : Number(((BigInt(amount) + 99n) / 1000n) * 1000n + 900n);
 export function quote(s, tier, months) {
   const p = s.tiers.find((p) => p.name === tier),
     r = p?.rules.find((r) => r.months === months);
   if (!r) throw Error("Unauthorized selection");
-  const monthly = reduce(p.monthly, r.bps),
-    setup = s.discountSetup ? reduce(p.setup, r.bps) : p.setup;
+  const discountedMonthly = reduce(p.monthly, r.bps);
+  const discountedSetup = s.discountSetup ? reduce(p.setup, r.bps) : p.setup;
+  const rounded = s.priceRounding === "ending9";
+  const monthly = rounded
+    ? Math.min(p.monthly, ending9(discountedMonthly))
+    : discountedMonthly;
+  const setup = rounded
+    ? Math.min(p.setup, ending9(discountedSetup))
+    : discountedSetup;
+  const effectiveBps = Number(
+    (BigInt(p.monthly - monthly) * 10000n + BigInt(p.monthly) / 2n) /
+      BigInt(p.monthly),
+  );
   const subtotal = monthly * months + setup,
     tax =
       s.tax.mode === "exclusive"
@@ -37,7 +51,15 @@ export function quote(s, tier, months) {
     tier,
     months,
     originalMonthly: p.monthly,
-    discountBps: r.bps,
+    discountBps: rounded ? effectiveBps : r.bps,
+    ...(rounded
+      ? {
+          authorizedDiscountBps: r.bps,
+          discountApproximate: monthly !== discountedMonthly,
+          discountedMonthly,
+          roundingAdjustment: monthly - discountedMonthly,
+        }
+      : {}),
     monthly,
     originalSetup: p.setup,
     setup,
@@ -86,13 +108,15 @@ export function freezeOffer(input, globalRules) {
     seen.add(p.name);
     return {
       name: p.name,
-      monthly: p.monthly,
-      setup: p.setup,
+      monthly:
+        input.priceRounding === "ending9" ? ending9(p.monthly) : p.monthly,
+      setup: input.priceRounding === "ending9" ? ending9(p.setup) : p.setup,
       rules: rules(p.rules ?? base),
     };
   });
   const s = {
     version: 1,
+    ...(input.priceRounding === "ending9" ? { priceRounding: "ending9" } : {}),
     title: input.title.trim(),
     tiers,
     tax: {

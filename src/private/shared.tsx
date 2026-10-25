@@ -1,4 +1,5 @@
 import type { Snapshot, Quote } from "./types";
+import { discountPercent } from "../../shared/price-display.mjs";
 import Head from "next/head";
 import Link from "next/link";
 import {
@@ -245,7 +246,7 @@ export function QuoteCard({
           money(q.originalMonthly)
         )}
       </p>
-      <span className="lt-tag">{q.discountBps / 100}% הנחה</span>
+      <span className="lt-tag">{discountPercent(q)} הנחה</span>
       <div className="lt-price">
         {money(q.monthly)}
         <small>/ חודש</small>
@@ -293,6 +294,9 @@ export function QuoteCard({
           ? "ההנחה חלה גם על ההקמה."
           : "ההנחה חלה על החיוב החודשי בלבד."}
       </p>
+      {q.discountApproximate && (
+        <p>מחיר חודשי מעוגל; מוצגים ההנחה והחיסכון בפועל.</p>
+      )}
       {compact ? (
         <details>
           <summary>מה קורה בסיום התקופה?</summary>

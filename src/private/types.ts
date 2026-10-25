@@ -27,6 +27,8 @@ export interface Quote {
   months: number;
   originalMonthly: number;
   discountBps: number;
+  discountApproximate?: boolean;
+  authorizedDiscountBps?: number;
   monthly: number;
   setup: number;
   subtotal: number;
@@ -36,6 +38,7 @@ export interface Quote {
   addons?: number;
 }
 export interface OfferInput {
+  priceRounding?: "exact" | "ending9";
   pages?: ProjectPage[];
   projectDetails?: ProjectDetails;
   title: string;

@@ -47,6 +47,7 @@ test("page scope survives generation and renders only the selected tier's delive
       depositPercent: 55,
       tiers: [...b.tiers, catalog[0].tiers[0]],
       tax: b.tax,
+      priceRounding: "exact",
       pages: pages(),
       projectDetails: details,
     },

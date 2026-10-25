@@ -1,5 +1,5 @@
 ﻿import { z } from "zod";
-import { freezeOffer } from "../pricing.mjs";
+import { freezeOffer, ending9 } from "../pricing.mjs";
 import { digest, requireValue } from "./security.mjs";
 const paragraph = z.string().trim().max(16000);
 const amount = z.number().int().min(0).max(100000000);
@@ -80,6 +80,7 @@ export const offerSchema = z
       bps: z.number().int().min(0).max(10000),
     }),
     discountSetup: z.boolean().default(false),
+    priceRounding: z.enum(["exact", "ending9"]).default("exact"),
     internalNotes: paragraph.default(""),
     composition: z
       .object({
@@ -127,6 +128,8 @@ export const signerSchema = z
   });
 export function snapshotFrom(input, settings, legal) {
   const data = offerSchema.parse(input);
+  if (data.priceRounding === "ending9")
+    data.addons = data.addons.map((a) => ({ ...a, amount: ending9(a.amount) }));
   requireValue(
     new Date(data.expires) > new Date(),
     "תוקף ההצעה חייב להיות בעתיד",
