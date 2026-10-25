@@ -94,9 +94,7 @@ export default function Customer() {
     fullName: "",
     businessName: "",
     phone: "",
-    registrationId: "",
     company: false,
-    role: "",
     authority: false,
     acceptAgreement: false,
     acceptPrivacy: false,
@@ -372,8 +370,11 @@ export default function Customer() {
                         onChange={(e) => update("phone", e.target.value)}
                       />
                     </Field>
-                    <Field label="שם העסק (אם קיים)">
+                    <Field
+                      label={signer.company ? "שם החברה" : "שם העסק (אם קיים)"}
+                    >
                       <input
+                        required={signer.company}
                         maxLength={200}
                         value={signer.businessName}
                         onChange={(e) => update("businessName", e.target.value)}
@@ -390,23 +391,6 @@ export default function Customer() {
                   </label>
                   {signer.company && (
                     <div className="lt-form-grid">
-                      <Field label="תפקיד">
-                        <input
-                          required
-                          maxLength={100}
-                          value={signer.role}
-                          onChange={(e) => update("role", e.target.value)}
-                        />
-                      </Field>
-                      <Field label="מספר רישום חברה (אם נדרש להסכם)">
-                        <input
-                          maxLength={40}
-                          value={signer.registrationId}
-                          onChange={(e) =>
-                            update("registrationId", e.target.value)
-                          }
-                        />
-                      </Field>
                       <label className="lt-check">
                         <input
                           type="checkbox"

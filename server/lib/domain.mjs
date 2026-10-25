@@ -106,7 +106,7 @@ export const signerSchema = z
     phone: z.string().trim().min(7).max(30),
     registrationId: z.string().trim().max(40).optional().default(""),
     company: z.boolean(),
-    role: z.string().trim().max(100),
+    role: z.string().trim().max(100).optional().default(""),
     authority: z.boolean(),
     acceptAgreement: z.literal(true),
     acceptPrivacy: z.literal(true),
@@ -120,7 +120,7 @@ export const signerSchema = z
   })
   .strict()
   .superRefine((v, ctx) => {
-    if (v.company && (!v.authority || !v.role || !v.businessName))
+    if (v.company && (!v.authority || !v.businessName))
       ctx.addIssue({ code: "custom", message: "Company authority required" });
     if (!/^data:image\/png;base64,[A-Za-z0-9+/]+=*$/.test(v.signature))
       ctx.addIssue({ code: "custom", message: "PNG signature required" });

@@ -5,6 +5,7 @@ import { SMTPServer } from "smtp-server";
 import { chromium } from "playwright";
 import { PDFDocument } from "pdf-lib";
 import { setup, post, input } from "./helpers/fixture.mjs";
+import { unseal } from "../server/lib/security.mjs";
 const f = await setup();
 const mailbox = [];
 const smtp = new SMTPServer({
@@ -456,6 +457,23 @@ try {
     .check();
   await customer.getByLabel("שם מלא", { exact: true }).fill("לקוח בדיקה");
   await customer.getByLabel("טלפון", { exact: true }).fill("0501234567");
+  await customer
+    .getByRole("checkbox", { name: "אני חותם בשם חברה", exact: true })
+    .check();
+  await customer.getByLabel("שם החברה", { exact: true }).fill("חברת בדיקה QA");
+  assert.equal(await customer.getByLabel("תפקיד", { exact: true }).count(), 0);
+  assert.equal(
+    await customer
+      .getByLabel("מספר רישום חברה (אם נדרש להסכם)", { exact: true })
+      .count(),
+    0,
+  );
+  await customer
+    .getByRole("checkbox", {
+      name: "אני מוסמך לחתום ולחייב את החברה",
+      exact: true,
+    })
+    .check();
   await customer.getByRole("checkbox", { name: "אני מקבל במפורש" }).check();
   await customer
     .getByRole("checkbox", { name: "קראתי ומאשר את הודעת הפרטיות" })
@@ -487,6 +505,9 @@ try {
   await download.saveAs("private-data/qa/signed-test.pdf");
   const contract = await f.db.collection("contracts").findOne();
   assert.ok(contract);
+  assert.ok(
+    unseal(contract.payload, f.config).html.includes("מורשה חתימה מטעם החברה"),
+  );
   assert.equal(contract.monthly, 31410);
   assert.equal(contract.total, 1002840);
   await customer.screenshot({
